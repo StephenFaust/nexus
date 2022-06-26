@@ -46,7 +46,7 @@ Nexus是一个简单的rpc中间件，基本实现rpc的主要功能，目前须
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();      
 ```
-bossGroup(即主Reactor)负责接受请求，workerGroup(即从Reactor)负责io读写,EventLoopGroup为netty对线程池的封装，bossGroup在只监听一个端口号的时候，默认开启一个线程，workerGroup主要做的是io读写，即为i0密集型，默认为核心cpu数*2;
+bossGroup(即主Reactor)负责接受请求，workerGroup(即从Reactor)负责io读写,EventLoopGroup为netty对线程池的封装，bossGroup在只监听一个端口号的时候，默认开启一个线程，workerGroup主要做的是io读写，即为io密集型，默认为核心cpu数*2;
 
 
 业务线程池，如下
