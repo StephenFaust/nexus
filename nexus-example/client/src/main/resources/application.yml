@@ -1,0 +1,46 @@
+spring:
+  application:
+    name: client-example
+  config:
+    activate:
+      on-profile: 9001
+
+
+
+
+---
+spring:
+  config:
+    activate:
+      on-profile: 9001
+
+server:
+  port: 9001
+
+nexus:
+  registry:
+    protocol: redis
+    ip: 127.0.0.1
+    port: 6379
+  rpc-role: client
+  cluster:
+    load-balance: random
+
+
+---
+spring:
+  config:
+    activate:
+      on-profile: 9002
+
+server:
+  port: 9002
+
+nexus:
+  registry:
+    protocol: redis
+    ip: 127.0.0.1
+    port: 6379
+  rpc-role: client
+  cluster:
+    load-balance: random

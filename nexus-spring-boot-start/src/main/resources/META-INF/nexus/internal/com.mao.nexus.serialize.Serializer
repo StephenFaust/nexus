@@ -1,0 +1,2 @@
+default=com.mao.nexus.serialize.DefaultSerializer
+kryo=com.mao.nexus.serialize.KryoSerializer
