@@ -1,11 +1,14 @@
 spring:
   application:
     name: server-example
-  config:
-    activate:
-      on-profile: dev1
 
-
+nexus:
+  port: 1234
+  registry:
+    protocol: redis
+    port: 6379
+    ip: 127.0.0.1
+  rpc-role: server
 
 
 ---
