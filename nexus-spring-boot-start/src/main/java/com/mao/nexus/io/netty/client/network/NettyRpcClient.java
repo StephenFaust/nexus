@@ -8,6 +8,7 @@ import io.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.PostConstruct;
 import java.net.InetSocketAddress;
 import java.util.concurrent.ExecutionException;
 
@@ -25,13 +26,20 @@ public class NettyRpcClient implements RpcClient {
         this.maxConnection = maxConnection;
     }
 
+
+    @PostConstruct
+    public void init() {
+        NettyPoolClient.init(maxConnection);
+    }
+
+
     @Override
     public byte[] sendMessage(byte[] data, MateInfo serviceInfo) throws InterruptedException, ExecutionException {
         byte[] result = null;
         final String ip = serviceInfo.getIp();
         final Integer port = serviceInfo.getPort();
         final InetSocketAddress inetSocketAddress = new InetSocketAddress(ip, port);
-        final NettyPoolClient poolClient = NettyPoolClient.getInstance(maxConnection);
+        final NettyPoolClient poolClient = NettyPoolClient.getInstance();
         //根据地址获得池时，如果poolMap没有这个池，则会put一个生成新的池
         final Channel channel = poolClient.getChannel(inetSocketAddress);
         try {

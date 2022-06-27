@@ -1,6 +1,7 @@
 package com.mao.nexus.io.netty.client.channelpool;
 
 
+import com.mao.nexus.exception.RpcException;
 import com.mao.nexus.io.netty.client.channelpool.handler.DefaultChannelPoolHandler;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -25,23 +26,26 @@ public class NettyPoolClient {
 
     private static volatile NettyPoolClient instance;
 
-    private static final Object locker = new Object();
-
     private NettyPoolClient() {
 
     }
 
-    //dcl 获取单例
-    public static NettyPoolClient getInstance(int maxConnection) {
-        if (instance == null) {
-            synchronized (locker) {
-                if (instance == null) {
-                    instance = new NettyPoolClient();
-                    instance.build(maxConnection);
-                }
-                return instance;
-            }
+    /**
+     * 初始化
+     *
+     * @param maxConnection
+     */
+    public static void init(int maxConnection) throws RpcException {
+        try {
+            instance = new NettyPoolClient();
+            instance.build(maxConnection);
+        } catch (Exception ex) {
+            throw new RpcException("NettyPoolClient Initialization failed,msg:" + ex.getMessage());
         }
+    }
+
+
+    public static NettyPoolClient getInstance() {
         return instance;
     }
 
