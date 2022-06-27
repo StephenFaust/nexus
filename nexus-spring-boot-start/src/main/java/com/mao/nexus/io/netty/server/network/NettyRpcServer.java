@@ -44,6 +44,7 @@ public class NettyRpcServer extends RpcServer {
             public Thread newThread(@NotNull Runnable r) {
                 Thread thread = new Thread(r);
                 thread.setName("work-th-" + Thread.currentThread().getId());
+                thread.setDaemon(true);
                 return thread;
             }
         });
