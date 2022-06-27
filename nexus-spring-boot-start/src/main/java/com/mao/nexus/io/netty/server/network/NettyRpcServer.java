@@ -10,6 +10,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.LengthFieldPrepender;
+import io.netty.util.ReferenceCountUtil;
 import io.netty.util.concurrent.DefaultEventExecutorGroup;
 import io.netty.util.concurrent.EventExecutorGroup;
 import org.jetbrains.annotations.NotNull;
@@ -102,8 +103,8 @@ public class NettyRpcServer extends RpcServer {
         @Override
         public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
             // logger.info("Server receive a massage");
+            final ByteBuf msgBuf = (ByteBuf) msg;
             try {
-                final ByteBuf msgBuf = (ByteBuf) msg;
                 final byte[] reqBytes = new byte[msgBuf.readableBytes()];
                 msgBuf.readBytes(reqBytes);
                 final byte[] respBytes;
@@ -113,6 +114,8 @@ public class NettyRpcServer extends RpcServer {
                 ctx.writeAndFlush(resBuf);
             } catch (Exception e) {
                 logger.error("error,{}", e.getMessage());
+            } finally {
+                ReferenceCountUtil.release(msgBuf);
             }
         }
 

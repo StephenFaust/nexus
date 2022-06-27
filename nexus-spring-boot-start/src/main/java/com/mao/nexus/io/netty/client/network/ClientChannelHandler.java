@@ -3,6 +3,7 @@ package com.mao.nexus.io.netty.client.network;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.util.ReferenceCountUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,11 +31,15 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
         logger.debug("Client received massage: {}", msg);
         // 将 byteBuf 转成 byte[]
         final ByteBuf buffer = (ByteBuf) msg;
-        response = new byte[buffer.readableBytes()];
-        buffer.readBytes(response);
-        //这里使用锁才能使用wait/notify(这里其实是没有发生线程竞争，所以这里是无锁状态（“偏向锁”）)
-        synchronized (this) {
-            this.notify();
+        try {
+            response = new byte[buffer.readableBytes()];
+            buffer.readBytes(response);
+            //这里使用锁才能使用wait/notify(这里其实是没有发生线程竞争，所以这里是无锁状态（“偏向锁”）)
+            synchronized (this) {
+                this.notify();
+            }
+        } finally {
+            ReferenceCountUtil.release(buffer);
         }
     }
 

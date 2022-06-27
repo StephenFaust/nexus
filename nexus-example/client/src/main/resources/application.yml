@@ -13,6 +13,7 @@ nexus:
   rpc-role: client
   cluster:
     load-balance: random
+  max-connection: 20
 
 
 ---
