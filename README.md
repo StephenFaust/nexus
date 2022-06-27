@@ -93,7 +93,7 @@ nexus使用netty的FixedChannelPool，最大连接数通过配置文件配置，
   
  ##### 动态代理
 
-使用jdk动态代理生成代理对象，供服务端使用
+使用jdk动态代理生成代理对象，供客户端使用
  ```java
     public <T> T getProxyInstance(Class<T> clazz) {
             return (T) Proxy.newProxyInstance(clazz.getClassLoader(), new Class[]{clazz}, new InvocationHandler() {
