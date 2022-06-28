@@ -1,5 +1,6 @@
 package com.mao.nexus.io.netty.client.network;
 
+import com.mao.nexus.exception.RpcException;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -34,13 +35,13 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
         try {
             response = new byte[buffer.readableBytes()];
             buffer.readBytes(response);
-            //这里使用锁才能使用wait/notify(这里其实是没有发生线程竞争，所以这里是无锁状态（“偏向锁”）)
             synchronized (this) {
                 this.notify();
             }
         } finally {
             ReferenceCountUtil.release(buffer);
         }
+
     }
 
     @Override
@@ -52,10 +53,14 @@ public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         logger.error("Catch exception: {}", cause.getMessage());
         ctx.close();
+        synchronized (this) {
+            this.notify();
+        }
     }
 
     public byte[] response() throws InterruptedException {
         synchronized (this) {
+            //这里使用锁才能使用wait/notify
             this.wait();
         }
         return response;

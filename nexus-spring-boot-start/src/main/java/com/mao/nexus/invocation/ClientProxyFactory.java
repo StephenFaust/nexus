@@ -11,6 +11,7 @@ import com.mao.nexus.serialize.Serializer;
 import com.mao.nexus.cluster.loadbalance.LoadBalancer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 import java.lang.reflect.InvocationHandler;
@@ -51,33 +52,31 @@ public class ClientProxyFactory {
      */
     @SuppressWarnings("unchecked")
     public <T> T getProxyInstance(Class<T> clazz) {
-        return (T) Proxy.newProxyInstance(clazz.getClassLoader(), new Class[]{clazz}, new InvocationHandler() {
-            @Override
-            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                String serviceName = clazz.getName();
-                final List<MateInfo> serviceInfos = serviceDiscovery.listServices(serviceName);
-                logger.info("Rpc server instance list: {}", serviceInfos);
-                if (CollectionUtils.isEmpty(serviceInfos)) {
-                    throw new RpcException("No rpc servers found.");
-                }
-                final MateInfo mateInfo = loadBalancer.getService(serviceInfos);
-                final RpcRequest rpcRequest = new RpcRequest();
-                rpcRequest.setServiceName(serviceName);
-                rpcRequest.setMethod(method.getName());
-                rpcRequest.setParameterTypes(method.getParameterTypes());
-                rpcRequest.setParameters(args);
-                // 编码请求消息， TODO: 这里可以配置多种编码方式
-                byte[] data = serializer.serialize(rpcRequest);
-                // 发送消息
-                byte[] byteResponse = rpcClient.sendMessage(data, mateInfo);
-                // 解码响应消息
-                final RpcResponse rpcResponse = serializer.deserialize(byteResponse, RpcResponse.class);
-                if (rpcResponse.getException() != null) {
-                    throw rpcResponse.getException();
-                }
-                // 解析返回结果进行处理
-                return rpcResponse.getData();
+        return (T) Proxy.newProxyInstance(clazz.getClassLoader(), new Class[]{clazz}, (proxy, method, args) -> {
+            String serviceName = clazz.getName();
+            final List<MateInfo> serviceInfos = serviceDiscovery.listServices(serviceName);
+            logger.info("Rpc server instance list: {}", serviceInfos);
+            if (CollectionUtils.isEmpty(serviceInfos)) {
+                throw new RpcException("No rpc servers found.");
             }
+            final MateInfo mateInfo = loadBalancer.getService(serviceInfos);
+            final RpcRequest rpcRequest = new RpcRequest();
+            rpcRequest.setServiceName(serviceName);
+            rpcRequest.setMethod(method.getName());
+            rpcRequest.setParameterTypes(method.getParameterTypes());
+            rpcRequest.setParameters(args);
+            // 编码请求消息， TODO: 这里可以配置多种编码方式
+            byte[] data = serializer.serialize(rpcRequest);
+            // 发送消息
+            byte[] byteResponse = rpcClient.sendMessage(data, mateInfo);
+            Assert.isTrue(byteResponse != null, "Server Exception:Response is null");
+            // 解码响应消息
+            final RpcResponse rpcResponse = serializer.deserialize(byteResponse, RpcResponse.class);
+            if (rpcResponse.getException() != null) {
+                throw rpcResponse.getException();
+            }
+            // 解析返回结果进行处理
+            return rpcResponse.getData();
         });
     }
 }
