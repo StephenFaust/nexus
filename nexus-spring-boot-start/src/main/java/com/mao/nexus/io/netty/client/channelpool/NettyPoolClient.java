@@ -50,8 +50,9 @@ public class NettyPoolClient {
     }
 
     public Channel getChannel(InetSocketAddress inetSocketAddress) throws ExecutionException, InterruptedException {
-        if (inetSocketAddress == null)
+        if (inetSocketAddress == null) {
             throw new IllegalArgumentException("inetSocketAddress can't be null");
+        }
         final SimpleChannelPool pool = poolMap.get(inetSocketAddress);
         //获得池中的通道，写入参数，归还通道；这里是异步处理
         final Future<Channel> f = pool.acquire();

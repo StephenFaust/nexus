@@ -3,6 +3,7 @@ package com.mao.nexus.config;
 import com.mao.nexus.discovery.ServiceDiscovery;
 import com.mao.nexus.invocation.ClientProxyFactory;
 import com.mao.nexus.io.netty.client.network.NettyRpcClient;
+import com.mao.nexus.io.netty.client.network.NewNettyRpcClient;
 import com.mao.nexus.io.netty.client.network.RpcClient;
 import com.mao.nexus.cluster.loadbalance.LoadBalancer;
 import com.mao.nexus.property.RegistryProperties;
@@ -46,8 +47,9 @@ public class ClientAutoConfiguration {
     }
 
     @Bean
-    public RpcClient rpcClient(@Autowired RpcProperties rpcProperties) {
-        return new NettyRpcClient(rpcProperties.getMaxConnection());
+    public RpcClient rpcClient(@Autowired RpcProperties rpcProperties, @Autowired Serializer serializer) {
+        // return new NettyRpcClient(rpcProperties.getMaxConnection(), serializer);
+        return new NewNettyRpcClient(rpcProperties.getTimeoutMillis(), serializer);
     }
 
 }

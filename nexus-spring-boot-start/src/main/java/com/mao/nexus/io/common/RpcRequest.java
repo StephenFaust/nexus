@@ -11,7 +11,7 @@ import java.util.Map;
  * @date ：2022/6/13 19:51
  */
 @Data
-public class RpcRequest implements Serializable {
+public class RpcRequest extends MateData {
     private String serviceName;
     private String method;
     private Map<String, String> headers = new HashMap<>();

@@ -1,16 +1,15 @@
 package com.mao.nexus.io.netty.server.network;
 
 import com.mao.nexus.io.netty.server.handler.RequestHandler;
+import com.mao.nexus.io.netty.server.network.handler.ChannelRequestHandler;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.LengthFieldPrepender;
-import io.netty.util.ReferenceCountUtil;
+import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.DefaultEventExecutorGroup;
 import io.netty.util.concurrent.EventExecutorGroup;
 import org.jetbrains.annotations.NotNull;
@@ -18,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author ：StephenMao
@@ -57,7 +57,7 @@ public class NettyRpcServer extends RpcServer {
                     // 设置服务端通道实现类型
                     .channel(NioServerSocketChannel.class)
                     // 服务端用于接收进来的连接，也就是boosGroup线程, 线程队列大小
-                    .option(ChannelOption.SO_BACKLOG, 100)
+                    .option(ChannelOption.SO_BACKLOG, 200)
                     .childOption(ChannelOption.SO_KEEPALIVE, true)
                     .childOption(ChannelOption.TCP_NODELAY, true)
                     // child 通道，worker 线程处理器
@@ -66,10 +66,11 @@ public class NettyRpcServer extends RpcServer {
                         @Override
                         public void initChannel(SocketChannel channel) {
                             ChannelPipeline pipeline = channel.pipeline();
+                            pipeline.addLast(new IdleStateHandler(30, 0, 0, TimeUnit.MINUTES));
                             pipeline.addLast("encoder", new LengthFieldPrepender(8));
                             pipeline.addLast("decoder", new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0,
                                     8, 0, 8));
-                            pipeline.addLast(businessGroup, "work executor", new ChannelRequestHandler());
+                            pipeline.addLast(businessGroup, "work executor", new ChannelRequestHandler(requestHandler));
                         }
                     });
 
@@ -93,37 +94,6 @@ public class NettyRpcServer extends RpcServer {
         channel.close();
     }
 
-    private class ChannelRequestHandler extends ChannelInboundHandlerAdapter {
 
-        @Override
-        public void channelActive(ChannelHandlerContext ctx) throws Exception {
-            logger.info("channel active: {}", ctx.channel().id());
-        }
-
-        @Override
-        public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-            // logger.info("Server receive a massage");
-            final ByteBuf msgBuf = (ByteBuf) msg;
-            try {
-                final byte[] reqBytes = new byte[msgBuf.readableBytes()];
-                msgBuf.readBytes(reqBytes);
-                final byte[] respBytes;
-                respBytes = requestHandler.handleRequest(reqBytes);
-                final ByteBuf resBuf = Unpooled.buffer(respBytes.length);
-                resBuf.writeBytes(respBytes);
-                ctx.writeAndFlush(resBuf);
-            } catch (Exception e) {
-                logger.error("error,{}", e.getMessage());
-            } finally {
-                ReferenceCountUtil.release(msgBuf);
-            }
-        }
-
-        @Override
-        public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-            logger.error("Catch exception", cause);
-            ctx.close();
-        }
-    }
 }
 

@@ -24,4 +24,7 @@ public class DefaultProperties {
 
     public static final String DEFAULT_REGISTRY_PROTOCOL = "redis";
 
+    //客户端超时时间，默认为20分钟
+    public static final int DEFAULT_Timeout_Millis = 1200_000;
+
 }

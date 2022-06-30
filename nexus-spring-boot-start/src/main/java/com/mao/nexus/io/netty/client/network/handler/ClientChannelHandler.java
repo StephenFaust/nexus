@@ -1,17 +1,19 @@
-package com.mao.nexus.io.netty.client.network;
+package com.mao.nexus.io.netty.client.network.handler;
 
-import com.mao.nexus.exception.RpcException;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.ReferenceCountUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.DependsOn;
 
 /**
  * @author ：StephenMao
  * @date ：2022/6/14 13:38
  */
+
+@DependsOn
 public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
 
     private static final Logger logger = LoggerFactory.getLogger(ClientChannelHandler.class);

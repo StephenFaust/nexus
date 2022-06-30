@@ -65,13 +65,9 @@ public class ClientProxyFactory {
             rpcRequest.setMethod(method.getName());
             rpcRequest.setParameterTypes(method.getParameterTypes());
             rpcRequest.setParameters(args);
-            // 编码请求消息， TODO: 这里可以配置多种编码方式
-            byte[] data = serializer.serialize(rpcRequest);
             // 发送消息
-            byte[] byteResponse = rpcClient.sendMessage(data, mateInfo);
-            Assert.isTrue(byteResponse != null, "Server Exception:Response is null");
-            // 解码响应消息
-            final RpcResponse rpcResponse = serializer.deserialize(byteResponse, RpcResponse.class);
+            final RpcResponse rpcResponse = rpcClient.sendMessage(rpcRequest, mateInfo);
+            Assert.isTrue(rpcResponse != null, "Server Exception:Response is null");
             if (rpcResponse.getException() != null) {
                 throw rpcResponse.getException();
             }

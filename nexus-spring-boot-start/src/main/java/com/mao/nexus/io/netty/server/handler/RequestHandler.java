@@ -32,6 +32,7 @@ public class RequestHandler {
         final String serviceName = rpcRequest.getServiceName();
         final ServiceInfo serviceInfo = serviceRegistry.getServiceInstance(serviceName);
         RpcResponse response = new RpcResponse();
+        response.setUniqueIdentification(rpcRequest.getUniqueIdentification());
         if (serviceInfo == null) {
             response.setStatus("Not Found");
             return serializer.serialize(response);

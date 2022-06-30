@@ -3,6 +3,7 @@ package com.mao.nexus.property;
 import com.mao.nexus.property.enums.RpcRole;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.DependsOn;
 
 /**
  * @author ：StephenMao
@@ -27,6 +28,9 @@ public class RpcProperties {
 
     //序列化方式
     private String serializationProtocol = DefaultProperties.DEFAULT_SERIALIZATION_PROTOCOL;
+
+    //客户端超市时间
+    private int timeoutMillis = DefaultProperties.DEFAULT_Timeout_Millis;
 
     //角色
     private RpcRole rpcRole;

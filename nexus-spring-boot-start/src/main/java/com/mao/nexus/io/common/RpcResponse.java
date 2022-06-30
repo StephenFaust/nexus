@@ -12,7 +12,7 @@ import java.util.Map;
  * @date ：2022/6/13 19:50
  */
 @Data
-public class RpcResponse implements Serializable {
+public class RpcResponse extends MateData {
     private String status;
     private Map<String, String> headers = new HashMap<>();
     private Object data;

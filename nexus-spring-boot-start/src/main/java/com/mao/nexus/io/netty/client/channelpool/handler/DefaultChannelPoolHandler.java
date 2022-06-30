@@ -1,8 +1,8 @@
 package com.mao.nexus.io.netty.client.channelpool.handler;
 
 
-import com.mao.nexus.io.netty.client.network.ChannelManger;
-import com.mao.nexus.io.netty.client.network.ClientChannelHandler;
+import com.mao.nexus.io.netty.client.channel.ChannelManger;
+import com.mao.nexus.io.netty.client.network.handler.ClientChannelHandler;
 import io.netty.channel.Channel;
 import io.netty.channel.pool.ChannelPoolHandler;
 import io.netty.channel.socket.SocketChannel;
