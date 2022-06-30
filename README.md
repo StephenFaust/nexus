@@ -187,7 +187,7 @@ nexus:
    
  - 多路复用的实现
    
-   具体的实现思路就是在单个channel中，在数据包中加一个唯一标识字段，客户端每一次发送数据新建一个callBack，然后放在一个全局的map中，已唯一标识为key,callBack对象为value，在接受到服务端响应时，会将唯一标识带过来，拿到标识字段的值，去map中拿到callBack对象，调用callBack对象handler方法去处理响应数据包的数据，这样每一次请求就能和响应对应起来，而对于channel来说，只用关心发数据和接受数据就行了，后续的处理交给callBack处理就行了；
+   具体的实现思路就是在单个channel中，在数据包中加一个唯一标识字段，客户端每一次发送数据新建一个callBack，然后放在一个全局的map中，以唯一标识为key，callBack对象为value，在接受到服务端响应时，会将唯一标识带过来，拿到标识字段的值，去map中拿到callBack对象，调用callBack对象handle方法去处理响应数据包的数据，这样每一次请求就能和响应对应起来，而对于channel来说，只用关心发数据和接受数据就行了，后续的处理交给callBack处理就行了；
    
    
    
@@ -259,7 +259,7 @@ nexus:
    调用getResult方法：
    
    ```java
-callback.getResult(request.getUniqueIdentification(), timeoutMillis)
+   callback.getResult(request.getUniqueIdentification(), timeoutMillis)
    ```
    
    调用该方法，会调用callBack的 wait(long timeoutMillis)方法，这里会阻塞住当前线程，等待响应结果，如果在指定时间内没有响应数据包，则超时（注：超时会接着往下走，而不是抛出InterruptedException，只有线程被打断时，才会抛出此错误），超时会将callBack从map中移除，避免没有收到数据包而导致callBack不能被GC回收,导致内存泄漏，默认超时时间是10分钟，可通过配置文件配置；
