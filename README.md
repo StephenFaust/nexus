@@ -253,8 +253,8 @@ nexus:
    
    ```java
     request.setUniqueIdentification(System.nanoTime());
-           CallBack callback = new ChannelCallBack();
-           ChannelManger.CALLBACK_CACHES.put(request.getUniqueIdentification(), callback);
+    CallBack callback = new ChannelCallBack();
+    ChannelManger.CALLBACK_CACHES.put(request.getUniqueIdentification(), callback);
    ```
    调用getResult方法：
    
