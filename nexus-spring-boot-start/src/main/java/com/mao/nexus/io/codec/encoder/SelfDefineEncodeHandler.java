@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author ：huangjinmao
+ * @author ：StephenMao
  * @date ：2022/6/30 13:40
  */
 public class SelfDefineEncodeHandler extends MessageToByteEncoder<ByteBuf> {

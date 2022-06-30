@@ -8,7 +8,7 @@ import io.netty.handler.codec.ByteToMessageDecoder;
 import java.util.List;
 
 /**
- * @author ：huangjinmao
+ * @author ：StephenMao
  * @date ：2022/6/30 13:42
  */
 public class SelfDefineDecodeHandler extends ByteToMessageDecoder {

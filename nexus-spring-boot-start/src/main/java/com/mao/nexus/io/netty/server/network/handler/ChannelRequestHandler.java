@@ -7,7 +7,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.ReferenceCountUtil;
 
 /**
- * @author ：huangjinmao
+ * @author ：StephenMao
  * @date ：2022/6/30 11:08
  */
 public class ChannelRequestHandler extends AbsRequestHandler {

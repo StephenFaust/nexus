@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * @author ：huangjinmao
+ * @author ：StephenMao
  * @date ：2022/6/29 14:40
  */
 public class ChannelManger {

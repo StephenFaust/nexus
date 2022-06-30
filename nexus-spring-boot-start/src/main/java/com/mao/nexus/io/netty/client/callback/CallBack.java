@@ -4,7 +4,7 @@ import com.mao.nexus.io.common.RpcRequest;
 import com.mao.nexus.io.common.RpcResponse;
 
 /**
- * @author ：huangjinmao
+ * @author ：StephenMao
  * @date ：2022/6/29 14:42
  */
 public interface CallBack {
