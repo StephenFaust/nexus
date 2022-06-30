@@ -75,7 +75,7 @@ bossGroup(即主Reactor)负责接受请求，workerGroup(即从Reactor)负责io�
     private final Bootstrap strap = new Bootstrap();
 ```
 
- ##### ``客户端连接池``（注：最新提交代码已废除连接池，已实现连接的多路复用）
+ ##### 客户端连接池（注：最新提交代码已废除连接池，已实现连接的多路复用）
 
 ```java
     new FixedChannelPool(strap.remoteAddress(key), new DefaultChannelPoolHandler(), maxConnection);
