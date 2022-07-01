@@ -2,7 +2,6 @@ package com.mao.nexus.io.netty.client.network.handler;
 
 import com.mao.nexus.io.common.RpcResponse;
 import com.mao.nexus.io.netty.client.callback.CallBack;
-import com.mao.nexus.io.netty.client.channel.ChannelCallBack;
 import com.mao.nexus.io.netty.client.channel.ChannelManger;
 import com.mao.nexus.serialize.Serializer;
 import io.netty.buffer.ByteBuf;
@@ -12,6 +11,8 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.ReferenceCountUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.Executor;
 
 /**
  * @author ：StephenMao
@@ -24,8 +25,11 @@ public class NewClientChannelHandler extends ChannelInboundHandlerAdapter {
 
     private final Serializer serializer;
 
-    public NewClientChannelHandler(Serializer serializer) {
+    private final Executor executor;
+
+    public NewClientChannelHandler(Serializer serializer, Executor executor) {
         this.serializer = serializer;
+        this.executor = executor;
     }
 
     @Override
@@ -35,6 +39,10 @@ public class NewClientChannelHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        executor.execute(() -> doWork(msg));
+    }
+
+    private void doWork(Object msg) {
         logger.info("Client received massage: {}", msg);
         final ByteBuf buffer = (ByteBuf) msg;
         try {
@@ -52,7 +60,6 @@ public class NewClientChannelHandler extends ChannelInboundHandlerAdapter {
             //一定要将byteBuf释放掉，不然会内存泄漏
             ReferenceCountUtil.release(buffer);
         }
-        // 将 byteBuf 转成 byte[]
     }
 
     @Override

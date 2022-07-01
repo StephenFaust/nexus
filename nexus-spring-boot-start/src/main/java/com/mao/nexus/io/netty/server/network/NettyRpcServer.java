@@ -10,13 +10,12 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.LengthFieldPrepender;
 import io.netty.handler.timeout.IdleStateHandler;
-import io.netty.util.concurrent.DefaultEventExecutorGroup;
-import io.netty.util.concurrent.EventExecutorGroup;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.Executor;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -40,15 +39,21 @@ public class NettyRpcServer extends RpcServer {
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         // 业务线程池
-        EventExecutorGroup businessGroup = new DefaultEventExecutorGroup(maxWorkThreadCount, new ThreadFactory() {
-            @Override
-            public Thread newThread(@NotNull Runnable r) {
-                Thread thread = new Thread(r);
-                thread.setName("work-th-" + Thread.currentThread().getId());
-                thread.setDaemon(true);
-                return thread;
-            }
+        final Executor executor = new ThreadPoolExecutor(maxWorkThreadCount, maxWorkThreadCount, 0, TimeUnit.SECONDS, new LinkedBlockingQueue<>(), r -> {
+            Thread thread = new Thread(r);
+            thread.setDaemon(true);
+            thread.setName("ser-work-th-" + thread.getId());
+            return thread;
         });
+//        EventExecutorGroup businessGroup = new DefaultEventExecutorGroup(maxWorkThreadCount, new ThreadFactory() {
+//            @Override
+//            public Thread newThread(@NotNull Runnable r) {
+//                Thread thread = new Thread(r);
+//                thread.setName("work-th-" + thread.getId());
+//                thread.setDaemon(true);
+//                return thread;
+//            }
+//        });
         try {
             // 创建服务端的启动对象
             ServerBootstrap serverBootstrap = new ServerBootstrap()
@@ -70,7 +75,7 @@ public class NettyRpcServer extends RpcServer {
                             pipeline.addLast("encoder", new LengthFieldPrepender(8));
                             pipeline.addLast("decoder", new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0,
                                     8, 0, 8));
-                            pipeline.addLast(businessGroup, "work executor", new ChannelRequestHandler(requestHandler));
+                            pipeline.addLast("handler", new ChannelRequestHandler(requestHandler, executor));
                         }
                     });
 
@@ -93,7 +98,6 @@ public class NettyRpcServer extends RpcServer {
     public void stop() {
         channel.close();
     }
-
 
 }
 

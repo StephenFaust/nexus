@@ -6,6 +6,8 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.ReferenceCountUtil;
 
+import java.util.concurrent.*;
+
 /**
  * @author ：StephenMao
  * @date ：2022/6/30 11:08
@@ -13,9 +15,13 @@ import io.netty.util.ReferenceCountUtil;
 public class ChannelRequestHandler extends AbsRequestHandler {
 
 
-    public ChannelRequestHandler(RequestHandler requestHandler) {
+    public ChannelRequestHandler(RequestHandler requestHandler, Executor executor) {
         super(requestHandler);
+        this.executor = executor;
     }
+
+
+    private final Executor executor;
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
@@ -24,7 +30,12 @@ public class ChannelRequestHandler extends AbsRequestHandler {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        logger.info("Server receive a massage");
+        executor.execute(() -> doWork(ctx, msg));
+    }
+
+
+    private void doWork(ChannelHandlerContext ctx, Object msg) {
+        logger.info("Server receive a massage {}", msg);
         final ByteBuf msgBuf = (ByteBuf) msg;
         try {
             final byte[] reqBytes = new byte[msgBuf.readableBytes()];
@@ -40,7 +51,6 @@ public class ChannelRequestHandler extends AbsRequestHandler {
             ReferenceCountUtil.release(msgBuf);
         }
     }
-
 
     @Override
     public void idlHandle(ChannelHandlerContext ctx) {

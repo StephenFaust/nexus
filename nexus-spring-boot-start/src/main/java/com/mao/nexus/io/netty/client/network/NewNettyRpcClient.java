@@ -18,13 +18,15 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.LengthFieldPrepender;
-import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.GenericFutureListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import java.net.InetSocketAddress;
+import java.util.concurrent.Executor;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author ：StephenMao
@@ -42,14 +44,24 @@ public class NewNettyRpcClient implements RpcClient {
 
     private final int timeoutMillis;
 
-    public NewNettyRpcClient(int timeoutMillis,Serializer serializer) {
+    private static int CLIENT_THREADS_NUMBER = Runtime.getRuntime().availableProcessors();
+
+    private static final Object locker = new Object();
+
+    public NewNettyRpcClient(int timeoutMillis, Serializer serializer) {
         this.timeoutMillis = timeoutMillis;
         this.serializer = serializer;
     }
 
     @PostConstruct
     private void init() {
-        this.clientHandler = new NewClientChannelHandler(serializer);
+        final Executor executor = new ThreadPoolExecutor(CLIENT_THREADS_NUMBER, CLIENT_THREADS_NUMBER, 0, TimeUnit.SECONDS, new LinkedBlockingQueue<>(), r -> {
+            Thread thread = new Thread(r);
+            thread.setDaemon(true);
+            thread.setName("cli-work-th-" + thread.getId());
+            return thread;
+        });
+        this.clientHandler = new NewClientChannelHandler(serializer, executor);
         // 初始化 netty 客户端
         final NioEventLoopGroup eventGroup = new NioEventLoopGroup(20);
         bootstrap = new Bootstrap()
@@ -73,21 +85,7 @@ public class NewNettyRpcClient implements RpcClient {
     public RpcResponse sendMessage(RpcRequest request, MateInfo mateInfo) {
         final String ip = mateInfo.getIp();
         final Integer port = mateInfo.getPort();
-        InetSocketAddress address = new InetSocketAddress(ip, port);
-        Channel channel = ChannelManger.CHANNEL_CACHES.get(address);
-        try {
-            if (null == channel) {
-                channel = getChannel(ip, port);
-            } else {
-                if (!channel.isActive()) {
-                    closeChannel(channel);
-                    channel = getChannel(ip, port);
-                }
-            }
-            ChannelManger.CHANNEL_CACHES.put(address, channel);
-        } catch (Exception ex) {
-            throw new RpcException(ex.getMessage());
-        }
+        Channel channel = getNewChannel(ip, port);
         logger.info("use channel:{}", channel);
         request.setUniqueIdentification(System.nanoTime());
         CallBack callback = new ChannelCallBack();
@@ -98,6 +96,35 @@ public class NewNettyRpcClient implements RpcClient {
         channel.writeAndFlush(buffer);
         return callback.getResult(request.getUniqueIdentification(), timeoutMillis);
     }
+
+    private Channel getNewChannel(String ip, int port) {
+        InetSocketAddress address = new InetSocketAddress(ip, port);
+        Channel channel = ChannelManger.CHANNEL_CACHES.get(address);
+        if (null == channel) {
+            synchronized (this) {
+                try {
+                    channel = ChannelManger.CHANNEL_CACHES.get(address);
+                    if (null == channel) {
+                        logger.info("调用了");
+                        channel = getChannel(ip, port);
+                        ChannelManger.CHANNEL_CACHES.put(address, channel);
+                    } else {
+                        if (!channel.isActive()) {
+                            logger.info("连接失效了");
+                            closeChannel(channel);
+                            channel = getChannel(ip, port);
+                            ChannelManger.CHANNEL_CACHES.put(address, channel);
+                        }
+                    }
+
+                } catch (Exception ex) {
+                    throw new RpcException(ex.getMessage());
+                }
+            }
+        }
+        return channel;
+    }
+
 
     private Channel getChannel(String ip, int port) throws InterruptedException {
         return bootstrap.connect(ip, port).addListener(new ChannelFutureListener() {
