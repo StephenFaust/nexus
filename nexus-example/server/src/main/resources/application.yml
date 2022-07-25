@@ -1,15 +1,28 @@
 spring:
   application:
     name: server-example
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      discovery:
+        enabled: true
+        register: true
+        deregister: true
+        health-check-critical-timeout: 10s
+        service-name: server-example
+        heartbeat:
+          enabled: true
+
 
 nexus:
+  service-name: server-example
   port: 1234
   registry:
-    protocol: redis
-    port: 6379
-    ip: 127.0.0.1
-  rpc-role: server
+    protocol: consul
 
+server:
+  port: 1478
 
 ---
 spring:
@@ -17,13 +30,14 @@ spring:
     activate:
       on-profile: dev1
 
+server:
+  port: 1478
+
 nexus:
+  service-name: server-example
   port: 1234
   registry:
-    protocol: redis
-    port: 6379
-    ip: 127.0.0.1
-  rpc-role: server
+    protocol: consul
 
 
 ---
@@ -31,11 +45,10 @@ spring:
   config:
     activate:
       on-profile: dev2
-
+server:
+  port: 1479
 nexus:
+  service-name: server-example
   port: 1235
   registry:
-    protocol: redis
-    port: 6379
-    ip: 127.0.0.1
-  rpc-role: server
+    protocol: consul

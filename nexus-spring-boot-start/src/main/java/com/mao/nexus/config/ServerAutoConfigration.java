@@ -21,7 +21,7 @@ import org.springframework.context.annotation.Configuration;
  * @date 2022/6/26 12:57
  */
 @Configuration
-@ConditionalOnProperty(prefix = "nexus", name = "rpc-role", havingValue = "server")
+//@ConditionalOnProperty(prefix = "nexus", name = "rpc-role", havingValue = "server")
 public class ServerAutoConfigration {
 
     // 监听器
@@ -33,16 +33,16 @@ public class ServerAutoConfigration {
     }
 
 
-    // 服务端
-    @Bean
-    public ServiceRegistry serviceRegister(@Autowired RegistryProperties registryProperties) {
-        ExtensionLoader<ServiceRegistry> extensionLoader =
-                ExtensionLoader.getExtensionLoader(ServiceRegistry.class);
-        return extensionLoader.getExtension(registryProperties.getProtocol(), new Class[]{RegistryProperties.class}, new Object[]{registryProperties});
-    }
+//    // 服务端
+//    @Bean
+//    public ServiceRegistry serviceRegister(@Autowired RegistryProperties registryProperties) {
+//        ExtensionLoader<ServiceRegistry> extensionLoader =
+//                ExtensionLoader.getExtensionLoader(ServiceRegistry.class);
+//        return extensionLoader.getExtension(registryProperties.getProtocol(), new Class[]{RegistryProperties.class}, new Object[]{registryProperties});
+//    }
 
     @Bean
-    public RequestHandler requestHandler(@Autowired ServiceRegistry serviceRegistry, @Autowired Serializer serializer) {
+    public RequestHandler requestHandler(@Autowired(required = false) ServiceRegistry serviceRegistry, @Autowired Serializer serializer) {
         return new RequestHandler(serviceRegistry, serializer);
     }
 

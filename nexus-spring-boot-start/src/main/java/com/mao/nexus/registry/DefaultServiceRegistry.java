@@ -20,12 +20,12 @@ public abstract class DefaultServiceRegistry implements ServiceRegistry {
     @Override
     public void register(ServiceInfo serviceInfo) throws Exception {
         Assert.notNull(serviceInfo, "error,mateInfo not null");
-        final String name = serviceInfo.getServiceName();
-        serviceInfos.put(name, serviceInfo);
+        final String clazzName = serviceInfo.getClazzName();
+        serviceInfos.put(clazzName, serviceInfo);
     }
 
     @Override
-    public ServiceInfo getServiceInstance(String name) throws Exception {
-        return serviceInfos.get(name);
+    public ServiceInfo getServiceInstance(String clazzName) throws Exception {
+        return serviceInfos.get(clazzName);
     }
 }

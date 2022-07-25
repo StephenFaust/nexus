@@ -1,5 +1,6 @@
 package com.mao.nexus.config;
 
+import com.mao.nexus.discovery.ConsulServiceDiscovery;
 import com.mao.nexus.discovery.ServiceDiscovery;
 import com.mao.nexus.invocation.ClientProxyFactory;
 import com.mao.nexus.io.netty.client.network.NettyRpcClient;
@@ -14,6 +15,7 @@ import com.mao.nexus.spring.DefaultRpcPostProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
@@ -23,7 +25,7 @@ import org.springframework.context.annotation.Lazy;
  * @date 2022/6/26 13:00
  */
 @Configuration
-@ConditionalOnProperty(prefix = "nexus", name = "rpc-role", havingValue = "client")
+//@ConditionalOnProperty(prefix = "nexus", name = "rpc-role", havingValue = "client")
 public class ClientAutoConfiguration {
 
     @Bean
@@ -34,21 +36,20 @@ public class ClientAutoConfiguration {
 
     // 客户端
     @Bean
-    public ServiceDiscovery serviceDiscovery(@Autowired RegistryProperties registryProperties) {
+    public ServiceDiscovery serviceDiscovery(@Autowired RegistryProperties registryProperties, @Autowired DiscoveryClient discoveryClient) {
         ExtensionLoader<ServiceDiscovery> extensionLoader =
                 ExtensionLoader.getExtensionLoader(ServiceDiscovery.class);
-        return extensionLoader.getExtension(registryProperties.getProtocol(), new Class[]{RegistryProperties.class}, new Object[]{registryProperties});
+        return extensionLoader.getExtension(registryProperties.getProtocol(), new Class[]{RegistryProperties.class, DiscoveryClient.class}, new Object[]{registryProperties, discoveryClient});
     }
 
 
     @Bean
-    public ClientProxyFactory clientProxyFactory(@Autowired ServiceDiscovery serviceDiscovery, @Autowired Serializer serializer, @Autowired RpcClient rpcClient, @Autowired LoadBalancer loadBalancer, @Autowired RpcProperties rpcProperties) {
+    public ClientProxyFactory clientProxyFactory(@Autowired ServiceDiscovery serviceDiscovery, @Autowired Serializer serializer, @Autowired RpcClient rpcClient, @Autowired LoadBalancer loadBalancer) {
         return new ClientProxyFactory(serviceDiscovery, serializer, rpcClient, loadBalancer);
     }
 
     @Bean
     public RpcClient rpcClient(@Autowired RpcProperties rpcProperties, @Autowired Serializer serializer) {
-        // return new NettyRpcClient(rpcProperties.getMaxConnection(), serializer);
         return new NewNettyRpcClient(rpcProperties.getTimeoutMillis(), serializer);
     }
 

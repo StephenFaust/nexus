@@ -56,11 +56,13 @@ public class DefaultRpcPostProcessor implements BeanPostProcessor {
             }
             // 终于找到被注解标记的成员属性了
             Class<?> fieldClass = field.getType();
+            // 获取服务名
+            String serviceName = annotation.serviceName();
             //关闭安全检查
             field.setAccessible(true);
             try {
                 // 注入代理对象值
-                field.set(bean, clientProxyFactory.getProxyInstance(fieldClass));
+                field.set(bean, clientProxyFactory.getProxyInstance(fieldClass, serviceName));
             } catch (IllegalAccessException e) {
                 logger.error("Fail to inject service, bean.name: {}, error.msg: {}", bean, e.getMessage());
             }

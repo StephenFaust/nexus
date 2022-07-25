@@ -1,16 +1,35 @@
 spring:
   application:
     name: client-example
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      discovery:
+        enabled: true
+        register: false
+        deregister: true
+        service-name: client-example
 
 server:
   port: 9001
 
+management:
+  endpoint:
+    # 启用pause端点
+    pause:
+      enabled: true
+    # 启用restart端点，之所以要启用restart端点，是因为pause端点的启用依赖restart端点的启用
+    restart:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: pause,restart
+
 nexus:
   registry:
-    protocol: redis
-    ip: 127.0.0.1
-    port: 6379
-  rpc-role: client
+    protocol: consul
   cluster:
     load-balance: random
   max-connection: 20
@@ -27,10 +46,7 @@ server:
 
 nexus:
   registry:
-    protocol: redis
-    ip: 127.0.0.1
-    port: 6379
-  rpc-role: client
+    protocol: consul
   cluster:
     load-balance: random
 
@@ -46,9 +62,6 @@ server:
 
 nexus:
   registry:
-    protocol: redis
-    ip: 127.0.0.1
-    port: 6379
-  rpc-role: client
+    protocol: consul
   cluster:
     load-balance: random

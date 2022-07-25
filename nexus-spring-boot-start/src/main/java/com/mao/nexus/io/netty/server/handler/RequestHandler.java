@@ -29,8 +29,8 @@ public class RequestHandler {
     public byte[] handleRequest(byte[] data) throws Exception {
         // 请求消息解码
         final RpcRequest rpcRequest = serializer.deserialize(data, RpcRequest.class);
-        final String serviceName = rpcRequest.getServiceName();
-        final ServiceInfo serviceInfo = serviceRegistry.getServiceInstance(serviceName);
+        final String clazzName = rpcRequest.getClazzName();
+        final ServiceInfo serviceInfo = serviceRegistry.getServiceInstance(clazzName);
         RpcResponse response = new RpcResponse();
         response.setUniqueIdentification(rpcRequest.getUniqueIdentification());
         if (serviceInfo == null) {

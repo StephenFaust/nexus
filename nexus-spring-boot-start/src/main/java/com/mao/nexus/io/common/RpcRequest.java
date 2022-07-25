@@ -13,6 +13,7 @@ import java.util.Map;
 @Data
 public class RpcRequest extends MateData {
     private String serviceName;
+    private String clazzName;
     private String method;
     private Map<String, String> headers = new HashMap<>();
     private Class<?>[] parameterTypes;

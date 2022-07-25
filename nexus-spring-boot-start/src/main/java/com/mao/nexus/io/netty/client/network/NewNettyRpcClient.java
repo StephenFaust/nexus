@@ -105,18 +105,15 @@ public class NewNettyRpcClient implements RpcClient {
                 try {
                     channel = ChannelManger.CHANNEL_CACHES.get(address);
                     if (null == channel) {
-                        logger.info("调用了");
                         channel = getChannel(ip, port);
                         ChannelManger.CHANNEL_CACHES.put(address, channel);
                     } else {
                         if (!channel.isActive()) {
-                            logger.info("连接失效了");
                             closeChannel(channel);
                             channel = getChannel(ip, port);
                             ChannelManger.CHANNEL_CACHES.put(address, channel);
                         }
                     }
-
                 } catch (Exception ex) {
                     throw new RpcException(ex.getMessage());
                 }

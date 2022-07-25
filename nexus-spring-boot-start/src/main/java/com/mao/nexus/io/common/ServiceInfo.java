@@ -14,11 +14,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ServiceInfo extends MateInfo {
 
-    public ServiceInfo(String serviceName, String ip, Integer port, Class<?> clazz, Object obj) {
+    public ServiceInfo(String serviceName, String ip, Integer port, String clazzName, Class<?> clazz, Object obj) {
         super(serviceName, ip, port);
+        this.clazzName = clazzName;
         this.clazz = clazz;
         this.obj = obj;
     }
+
+    /**
+     * 接口名
+     */
+    private String clazzName;
 
     /**
      * class 对象

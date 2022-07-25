@@ -46,22 +46,25 @@ public class ClientProxyFactory {
     /**
      * 获取代理对象，绑定 invoke 行为
      *
-     * @param clazz 接口 class 对象
-     * @param <T>   类型
-     * @return 代理对象
+     * @param clazz
+     * @param serviceName
+     * @param <T>
+     * @return
      */
     @SuppressWarnings("unchecked")
-    public <T> T getProxyInstance(Class<T> clazz) {
+    public <T> T getProxyInstance(Class<T> clazz, String serviceName) {
         return (T) Proxy.newProxyInstance(clazz.getClassLoader(), new Class[]{clazz}, (proxy, method, args) -> {
-            String serviceName = clazz.getName();
+            String clazzName = clazz.getName();
             final List<MateInfo> serviceInfos = serviceDiscovery.listServices(serviceName);
             logger.info("Rpc server instance list: {}", serviceInfos);
             if (CollectionUtils.isEmpty(serviceInfos)) {
                 throw new RpcException("No rpc servers found.");
             }
+            // 负载均衡策略
             final MateInfo mateInfo = loadBalancer.getService(serviceInfos);
             final RpcRequest rpcRequest = new RpcRequest();
             rpcRequest.setServiceName(serviceName);
+            rpcRequest.setClazzName(clazzName);
             rpcRequest.setMethod(method.getName());
             rpcRequest.setParameterTypes(method.getParameterTypes());
             rpcRequest.setParameters(args);

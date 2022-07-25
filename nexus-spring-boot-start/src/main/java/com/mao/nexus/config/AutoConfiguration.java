@@ -5,6 +5,7 @@ import com.mao.nexus.cluster.loadbalance.LoadBalancer;
 import com.mao.nexus.property.ClusterProperties;
 import com.mao.nexus.property.RegistryProperties;
 import com.mao.nexus.property.RpcProperties;
+import com.mao.nexus.registry.ConsulServiceRegistry;
 import com.mao.nexus.serialize.Serializer;
 import com.mao.nexus.spi.ExtensionLoader;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,7 @@ import org.springframework.context.annotation.Import;
  * @author ：StephenMao
  * @date ：2022/6/13 16:53
  */
-@Import({ClientAutoConfiguration.class, ServerAutoConfigration.class})
+@Import({ClientAutoConfiguration.class, ServerAutoConfigration.class, ConsulServiceRegistry.class})
 @Configuration
 @EnableConfigurationProperties({RpcProperties.class, ClusterProperties.class, RegistryProperties.class})
 public class AutoConfiguration {

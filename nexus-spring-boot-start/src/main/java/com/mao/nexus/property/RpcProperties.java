@@ -14,6 +14,8 @@ import org.springframework.context.annotation.DependsOn;
 @Data
 public class RpcProperties {
 
+    //服务名
+    private String serviceName;
     //服务端端口
     private Integer port = DefaultProperties.DEFAULT_PORT;
 
@@ -32,6 +34,4 @@ public class RpcProperties {
     //客户端超市时间
     private int timeoutMillis = DefaultProperties.DEFAULT_Timeout_Millis;
 
-    //角色
-    private RpcRole rpcRole;
 }

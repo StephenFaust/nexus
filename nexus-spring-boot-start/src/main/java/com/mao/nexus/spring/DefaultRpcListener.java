@@ -60,14 +60,15 @@ public class DefaultRpcListener implements ApplicationListener<ContextRefreshedE
             final Class<?>[] interfaces = clazz.getInterfaces();
             // 这里假设只实现了一个接口
             final Class<?> interfaceClazz = interfaces[0];
-            final String name = interfaceClazz.getName();
+            final String seviceName = rpcProperties.getServiceName();
+            final String clazzName = interfaceClazz.getName();
             String ip = "127.0.0.1";
             try {
                 ip = InetAddress.getLocalHost().getHostAddress();
             } catch (UnknownHostException e) {
             }
             final Integer port = rpcProperties.getPort();
-            final ServiceInfo serviceInfo = new ServiceInfo(name, ip, port, interfaceClazz, obj);
+            final ServiceInfo serviceInfo = new ServiceInfo(seviceName, ip, port, clazzName, interfaceClazz, obj);
             try {
                 // 注册服务
                 serviceRegistry.register(serviceInfo);

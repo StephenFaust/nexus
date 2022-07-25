@@ -1,2 +1,3 @@
 redis=com.mao.nexus.discovery.RedisServiceDiscovery
 zookeeper=com.mao.nexus.discovery.ZookeeperServiceDiscovery
+consul=com.mao.nexus.discovery.ConsulServiceDiscovery

@@ -5,6 +5,7 @@ import com.mao.nexus.io.common.MateInfo;
 import com.mao.nexus.property.RegistryProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import redis.clients.jedis.Jedis;
@@ -37,6 +38,8 @@ public class RedisServiceDiscovery implements ServiceDiscovery {
 
     private final RegistryProperties registryProperties;
 
+    private final DiscoveryClient discoveryClient;
+
     private JedisPool pool;
 
     private final ScheduledThreadPoolExecutor scheduledExecutor = new ScheduledThreadPoolExecutor(1, r -> {
@@ -55,8 +58,9 @@ public class RedisServiceDiscovery implements ServiceDiscovery {
     });
 
 
-    public RedisServiceDiscovery(RegistryProperties registryProperties) {
+    public RedisServiceDiscovery(RegistryProperties registryProperties, DiscoveryClient discoveryClient) {
         this.registryProperties = registryProperties;
+        this.discoveryClient = discoveryClient;
     }
 
 

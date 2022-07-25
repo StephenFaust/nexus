@@ -20,9 +20,9 @@ public interface ServiceRegistry {
     /**
      * 根据服务名称获取服务信息
      *
-     * @param name 服务名称
+     * @param clazzName 服务名称
      * @return 服务信息
      * @throws Exception 异常
      */
-    ServiceInfo getServiceInstance(String name) throws Exception;
+    ServiceInfo getServiceInstance(String clazzName) throws Exception;
 }

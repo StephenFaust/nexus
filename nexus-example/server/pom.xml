@@ -24,7 +24,7 @@
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
         <dependency>
@@ -50,13 +50,23 @@
             <artifactId>common-api</artifactId>
             <version>1.0.0</version>
         </dependency>
+
         <dependency>
             <groupId>com.mao.nexus</groupId>
             <artifactId>nexus-spring-boot-start</artifactId>
             <version>1.0.0</version>
-            <scope>compile</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <!-- spring cloud consul discovery 服务发现依赖 -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-consul-discovery</artifactId>
+            <version>3.1.1</version>
+        </dependency>
 
     </dependencies>
 

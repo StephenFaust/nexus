@@ -22,7 +22,7 @@ import java.util.Random;
 @RestController
 public class RpcController {
 
-    @NexusClient
+    @NexusClient(serviceName = "server-example")
     private TestService testService;
 
 
