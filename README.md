@@ -91,7 +91,7 @@ nexus使用netty的FixedChannelPool，最大连接数通过配置文件配置，
 
  ##### 服务注册发现
 
-  nexus默认并仅仅支持使用redis作为服务注册中心，后续会加入zk,nacos,consul;
+  nexus默认并仅仅支持使用consul作为服务注册中心，后续会加入zk,nacos;
 
  ##### 动态代理
 
