@@ -3,7 +3,7 @@ spring:
     name: server-example
   cloud:
     consul:
-      host: localhost
+      host: 192.168.205.129
       port: 8500
       discovery:
         enabled: true

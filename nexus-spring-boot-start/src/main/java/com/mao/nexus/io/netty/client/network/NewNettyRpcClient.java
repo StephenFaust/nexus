@@ -46,7 +46,6 @@ public class NewNettyRpcClient implements RpcClient {
 
     private static int CLIENT_THREADS_NUMBER = Runtime.getRuntime().availableProcessors();
 
-    private static final Object locker = new Object();
 
     public NewNettyRpcClient(int timeoutMillis, Serializer serializer) {
         this.timeoutMillis = timeoutMillis;
@@ -97,29 +96,42 @@ public class NewNettyRpcClient implements RpcClient {
         return callback.getResult(request.getUniqueIdentification(), timeoutMillis);
     }
 
-    private Channel getNewChannel(String ip, int port) {
-        InetSocketAddress address = new InetSocketAddress(ip, port);
+
+    private boolean isConnected(InetSocketAddress address) {
         Channel channel = ChannelManger.CHANNEL_CACHES.get(address);
-        if (null == channel) {
-            synchronized (this) {
-                try {
-                    channel = ChannelManger.CHANNEL_CACHES.get(address);
-                    if (null == channel) {
-                        channel = getChannel(ip, port);
+        return channel != null && channel.isActive();
+    }
+
+
+    private Channel doConnect(InetSocketAddress address) {
+        Channel channel;
+        synchronized (this) {
+            try {
+                channel = ChannelManger.CHANNEL_CACHES.get(address);
+                if (null == channel) {
+                    channel = getChannel(address.getHostName(), address.getPort());
+                    ChannelManger.CHANNEL_CACHES.put(address, channel);
+                } else {
+                    if (!channel.isActive()) {
+                        closeChannel(channel);
+                        channel = getChannel(address.getHostName(), address.getPort());
                         ChannelManger.CHANNEL_CACHES.put(address, channel);
-                    } else {
-                        if (!channel.isActive()) {
-                            closeChannel(channel);
-                            channel = getChannel(ip, port);
-                            ChannelManger.CHANNEL_CACHES.put(address, channel);
-                        }
                     }
-                } catch (Exception ex) {
-                    throw new RpcException(ex.getMessage());
                 }
+            } catch (Exception ex) {
+                throw new RpcException(ex.getMessage());
             }
         }
         return channel;
+    }
+
+
+    private Channel getNewChannel(String ip, int port) {
+        final InetSocketAddress address = new InetSocketAddress(ip, port);
+        if (!isConnected(address)) {
+            return doConnect(address);
+        }
+        return ChannelManger.CHANNEL_CACHES.get(address);
     }
 
 
