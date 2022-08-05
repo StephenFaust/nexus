@@ -13,7 +13,7 @@ import org.springframework.context.annotation.DependsOn;
  * @date ：2022/6/14 13:38
  */
 
-@DependsOn
+@Deprecated
 public class ClientChannelHandler extends ChannelInboundHandlerAdapter {
 
     private static final Logger logger = LoggerFactory.getLogger(ClientChannelHandler.class);

@@ -35,6 +35,9 @@ public class ChannelCallBack implements CallBack {
     @Override
     public RpcResponse getResult(Long uniqueIdentification, int timeoutMillis) {
         try {
+            if (timeoutMillis <= 0) {
+                timeoutMillis = 1000;
+            }
             synchronized (this) {
                 this.wait(timeoutMillis);
             }

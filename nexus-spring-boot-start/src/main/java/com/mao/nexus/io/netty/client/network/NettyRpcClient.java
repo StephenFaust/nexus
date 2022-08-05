@@ -22,7 +22,7 @@ import java.util.concurrent.ExecutionException;
  * @author ：StephenMao
  * @date ：2022/6/14 13:38
  */
-@DependsOn
+@Deprecated
 public class NettyRpcClient implements RpcClient {
 
     private static final Logger logger = LoggerFactory.getLogger(NettyRpcClient.class);
