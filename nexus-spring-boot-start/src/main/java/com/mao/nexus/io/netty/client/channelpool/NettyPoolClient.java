@@ -3,6 +3,7 @@ package com.mao.nexus.io.netty.client.channelpool;
 
 import com.mao.nexus.exception.RpcException;
 import com.mao.nexus.io.netty.client.channelpool.handler.DefaultChannelPoolHandler;
+import com.mao.nexus.serialize.Serializer;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
@@ -16,7 +17,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.concurrent.Future;
 
 import java.net.InetSocketAddress;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.*;
 
 /**
  * @author ：StephenMao
@@ -26,8 +27,13 @@ public class NettyPoolClient {
 
     private static volatile NettyPoolClient instance;
 
-    private NettyPoolClient() {
+    private final Serializer serializer;
 
+    private final Executor executor;
+
+    private NettyPoolClient(Serializer serializer, Executor executor) {
+        this.serializer = serializer;
+        this.executor = executor;
     }
 
     /**
@@ -35,9 +41,9 @@ public class NettyPoolClient {
      *
      * @param maxConnection
      */
-    public static void init(int maxConnection) throws RpcException {
+    public static void init(int maxConnection, Serializer serializer, Executor executor) throws RpcException {
         try {
-            instance = new NettyPoolClient();
+            instance = new NettyPoolClient(serializer, executor);
             instance.build(maxConnection);
         } catch (Exception ex) {
             throw new RpcException("NettyPoolClient Initialization failed,msg:" + ex.getMessage());
@@ -81,7 +87,7 @@ public class NettyPoolClient {
             @Override
             protected SimpleChannelPool newPool(InetSocketAddress key) {
                 //NettyChannelPoolHandler 实现ChannelPoolHandler，重写了创建通道、获得通道、归还通道方法
-                return new FixedChannelPool(strap.remoteAddress(key), new DefaultChannelPoolHandler(), maxConnection);
+                return new FixedChannelPool(strap.remoteAddress(key), new DefaultChannelPoolHandler(serializer, executor), maxConnection);
             }
         };
     }

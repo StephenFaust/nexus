@@ -13,6 +13,7 @@
         <module>server</module>
         <module>client</module>
         <module>common-api</module>
+        <module>both</module>
     </modules>
     <packaging>pom</packaging>
 

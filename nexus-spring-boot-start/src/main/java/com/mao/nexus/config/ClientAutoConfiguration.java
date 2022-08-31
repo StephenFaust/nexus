@@ -1,12 +1,11 @@
 package com.mao.nexus.config;
 
-import com.mao.nexus.discovery.ConsulServiceDiscovery;
+import com.mao.nexus.cluster.loadbalance.LoadBalancer;
 import com.mao.nexus.discovery.ServiceDiscovery;
 import com.mao.nexus.invocation.ClientProxyFactory;
 import com.mao.nexus.io.netty.client.network.NettyRpcClient;
 import com.mao.nexus.io.netty.client.network.NewNettyRpcClient;
 import com.mao.nexus.io.netty.client.network.RpcClient;
-import com.mao.nexus.cluster.loadbalance.LoadBalancer;
 import com.mao.nexus.property.RegistryProperties;
 import com.mao.nexus.property.RpcProperties;
 import com.mao.nexus.serialize.Serializer;
@@ -14,7 +13,6 @@ import com.mao.nexus.spi.ExtensionLoader;
 import com.mao.nexus.spring.DefaultRpcPostProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -50,7 +48,7 @@ public class ClientAutoConfiguration {
 
     @Bean
     public RpcClient rpcClient(@Autowired RpcProperties rpcProperties, @Autowired Serializer serializer) {
-        return new NewNettyRpcClient(rpcProperties.getTimeoutMillis(), serializer);
+        return new NettyRpcClient(rpcProperties.getMaxConnection(), rpcProperties.getTimeoutMillis(), serializer);
     }
 
 }
