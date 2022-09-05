@@ -17,13 +17,16 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.concurrent.Future;
 
 import java.net.InetSocketAddress;
+import java.util.Date;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.*;
 
 /**
  * @author ：StephenMao
  * @date ：2022/6/20 15:24
  */
-public class NettyPoolClient {
+public final class NettyPoolClient {
 
     private static volatile NettyPoolClient instance;
 
@@ -31,10 +34,15 @@ public class NettyPoolClient {
 
     private final Executor executor;
 
+    private static boolean isInit;
+
+    private static Object locker = new Object();
+
     private NettyPoolClient(Serializer serializer, Executor executor) {
         this.serializer = serializer;
         this.executor = executor;
     }
+
 
     /**
      * 初始化
@@ -43,8 +51,18 @@ public class NettyPoolClient {
      */
     public static void init(int maxConnection, Serializer serializer, Executor executor) throws RpcException {
         try {
-            instance = new NettyPoolClient(serializer, executor);
-            instance.build(maxConnection);
+            if (!isInit) {
+                synchronized (locker) {
+                    if (!isInit) {
+                        instance = new NettyPoolClient(serializer, executor);
+                        instance.build(maxConnection);
+                        isInit = true;
+                    }
+
+                }
+            }
+
+
         } catch (Exception ex) {
             throw new RpcException("NettyPoolClient Initialization failed,msg:" + ex.getMessage());
         }
@@ -52,6 +70,9 @@ public class NettyPoolClient {
 
 
     public static NettyPoolClient getInstance() {
+        if (!isInit) {
+            throw new RpcException("NettyPoolClient uninitialized");
+        }
         return instance;
     }
 
