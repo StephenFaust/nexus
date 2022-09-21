@@ -71,8 +71,6 @@ public class NettyRpcClient implements RpcClient {
             final ByteBuf buffer = Unpooled.buffer(data.length);
             buffer.writeBytes(data);
             channel.writeAndFlush(buffer);
-//            final ClientChannelHandler handler = (ClientChannelHandler) channel.attr(ChannelManger.attributeKey).get();
-//            result = handler.response();
         } catch (Exception ex) {
             logger.error("send message error,msg:{}", ex.getMessage());
         } finally {

@@ -25,7 +25,7 @@ import java.util.List;
  * <p>
  * 代理工厂
  */
-public class ClientProxyFactory {
+public class  ClientProxyFactory {
     private static final Logger logger = LoggerFactory.getLogger(ClientProxyFactory.class);
 
     private ServiceDiscovery serviceDiscovery;

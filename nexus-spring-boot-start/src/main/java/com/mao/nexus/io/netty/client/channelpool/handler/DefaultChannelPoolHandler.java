@@ -49,7 +49,7 @@ public class DefaultChannelPoolHandler implements ChannelPoolHandler {
         //channel.config().setKeepAlive(true);
         //channel.config().setTcpNoDelay(true);
         NewClientChannelHandler clientChannelHandler = new NewClientChannelHandler(serializer, executor);
-        channel.attr(ChannelManger.attributeKey).set(clientChannelHandler);
+//        channel.attr(ChannelManger.attributeKey).set(clientChannelHandler);
         channel.pipeline()
                 //心跳支持
                 // .addLast(new IdleStateHandler(3, 0, 0, TimeUnit.SECONDS))

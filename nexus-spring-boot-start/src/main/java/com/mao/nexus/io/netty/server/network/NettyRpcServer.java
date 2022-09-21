@@ -10,6 +10,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.LengthFieldPrepender;
 import io.netty.handler.timeout.IdleStateHandler;
+import io.netty.util.concurrent.GenericFutureListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,13 +85,22 @@ public class NettyRpcServer extends RpcServer {
             logger.info("[Nexus]Rpc Server started on port: {}", port);
             channel = channelFuture.channel();
             // 对关闭通道进行监听
-            channelFuture.channel().closeFuture().sync();
+            channelFuture.channel().closeFuture().addListener(future -> {
+                if (future.isSuccess()) {
+                    // 释放线程组资源
+                    try {
+                        bossGroup.shutdownGracefully();
+                        workerGroup.shutdownGracefully();
+                    } catch (Exception e) {
+                        logger.error("server closed error.", e);
+                    }
+
+                }
+
+            });
+
         } catch (Exception e) {
             logger.error("server error.", e);
-        } finally {
-            // 释放线程组资源
-            bossGroup.shutdownGracefully();
-            workerGroup.shutdownGracefully();
         }
     }
 
