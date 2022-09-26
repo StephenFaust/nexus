@@ -261,7 +261,7 @@ nexus:
    callback.getResult(request.getUniqueIdentification(), timeoutMillis)
    ```
    
-   调用该方法，会调用callBack的 wait(long timeoutMillis)方法，这里会阻塞住当前线程，等待响应结果，如果在指定时间内没有响应数据包，则超时（注：超时会接着往下走，而不是抛出InterruptedException，只有线程被打断时，才会抛出此错误），超时会将callBack从map中移除，避免没有收到数据包而导致callBack不能被GC回收,导致内存泄漏，默认超时时间是10分钟，可通过配置文件配置；
+   调用该方法，会调用callBack的 wait(long timeoutMillis)方法，这里会阻塞住当前线程，等待响应结果，如果在指定时间内没有响应数据包，则超时（注：超时会接着往下走，而不是抛出InterruptedException，只有线程被打断时，才会抛出此错误），超时会将callBack从map中移除，避免没有收到数据包而导致callBack不能被GC回收,导致内存泄漏，默认超时时间是1s，可通过配置文件配置；
 
    收到响应数据包会去map中找到callBack，从而调用handle方法，handle方法其实就是赋值和调用notify，唤醒被阻塞的线程，注：这里有可能找不到，因为可能超时被移除，所以要做非空判断，代码如下：
    
