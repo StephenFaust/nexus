@@ -39,7 +39,7 @@ public class ConsulServiceRegistry extends DefaultServiceRegistry{
             }
             if (-1 != port) {
                 ((Map) meta).put("nexus_port", Integer.toString(port));
-                this.consulRegistration.getService().setMeta((Map) meta);
+                this.consulRegistration.getService().setMeta(meta);
             }
         }
 

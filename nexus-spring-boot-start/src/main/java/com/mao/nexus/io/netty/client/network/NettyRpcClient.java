@@ -32,7 +32,7 @@ public class NettyRpcClient implements RpcClient {
 
     private final int timeoutMillis;
 
-    private final static int CLIENT_THREADS_NUMBER = Runtime.getRuntime().availableProcessors();
+    private static final int CLIENT_THREADS_NUMBER = Runtime.getRuntime().availableProcessors();
 
     public NettyRpcClient(int maxConnection, int timeoutMillis, Serializer serializer) {
         this.maxConnection = maxConnection;
@@ -59,23 +59,22 @@ public class NettyRpcClient implements RpcClient {
         final Integer port = mateInfo.getPort();
         final InetSocketAddress inetSocketAddress = new InetSocketAddress(ip, port);
         final NettyPoolClient poolClient = NettyPoolClient.getInstance();
-        //根据地址获得池时，如果poolMap没有这个池，则会put一个生成新的池
-        final Channel channel = poolClient.getChannel(inetSocketAddress);
         CallBack callback = new ChannelCallBack();
         try {
-            logger.info("use channel:{}", channel);
             request.setUniqueIdentification(System.nanoTime());
             ChannelManger.CALLBACK_CACHES.put(request.getUniqueIdentification(), callback);
             //序列化
             final byte[] data = serializer.serialize(request);
             final ByteBuf buffer = Unpooled.buffer(data.length);
             buffer.writeBytes(data);
+            //根据地址获得池时，如果poolMap没有这个池，则会put一个生成新的池
+            final Channel channel = poolClient.getChannel(inetSocketAddress);
+            logger.info("use channel:{}", channel);
             channel.writeAndFlush(buffer);
-        } catch (Exception ex) {
-            logger.error("send message error,msg:{}", ex.getMessage());
-        } finally {
             //返还给连接池
             poolClient.release(inetSocketAddress, channel);
+        } catch (Exception ex) {
+            logger.error("send message error,msg:{}", ex.getMessage());
         }
         return callback.getResult(request.getUniqueIdentification(), timeoutMillis);
     }
