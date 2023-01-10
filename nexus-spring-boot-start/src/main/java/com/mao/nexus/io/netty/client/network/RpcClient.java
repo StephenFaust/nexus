@@ -19,8 +19,6 @@ public interface RpcClient {
      * @param request
      * @param mateInfo
      * @return
-     * @throws ExecutionException
-     * @throws InterruptedException
      */
-    RpcResponse sendMessage(RpcRequest request, MateInfo mateInfo) throws ExecutionException, InterruptedException;
+    RpcResponse sendMessage(RpcRequest request, MateInfo mateInfo);
 }

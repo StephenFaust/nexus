@@ -3,7 +3,6 @@ package com.mao.nexus.io.common;
 import com.mao.nexus.exception.RpcException;
 import lombok.Data;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 

@@ -2,7 +2,6 @@ package com.mao.nexus.io.common;
 
 import lombok.Data;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,6 +11,7 @@ import java.util.Map;
  */
 @Data
 public class RpcRequest extends MateData {
+
     private String serviceName;
     private String clazzName;
     private String method;

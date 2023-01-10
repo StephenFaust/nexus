@@ -18,7 +18,7 @@ import org.springframework.context.annotation.Import;
  * @author ：StephenMao
  * @date ：2022/6/13 16:53
  */
-@Import({ClientAutoConfiguration.class, ServerAutoConfigration.class, ConsulServiceRegistry.class})
+@Import({ClientAutoConfiguration.class, ServerAutoConfiguration.class, ConsulServiceRegistry.class})
 @Configuration
 @EnableConfigurationProperties({RpcProperties.class, ClusterProperties.class, RegistryProperties.class})
 public class AutoConfiguration {

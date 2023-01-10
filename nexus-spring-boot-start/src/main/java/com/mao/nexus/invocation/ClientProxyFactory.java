@@ -3,21 +3,20 @@ package com.mao.nexus.invocation;
 
 import com.mao.nexus.exception.RpcException;
 import com.mao.nexus.discovery.ServiceDiscovery;
+import com.mao.nexus.interceptor.NexusInterceptor;
+import com.mao.nexus.io.common.*;
 import com.mao.nexus.io.netty.client.network.RpcClient;
-import com.mao.nexus.io.common.MateInfo;
-import com.mao.nexus.io.common.RpcRequest;
-import com.mao.nexus.io.common.RpcResponse;
-import com.mao.nexus.serialize.Serializer;
 import com.mao.nexus.cluster.loadbalance.LoadBalancer;
+import okhttp3.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * @author ：StephenMao
@@ -25,22 +24,24 @@ import java.util.List;
  * <p>
  * 代理工厂
  */
-public class  ClientProxyFactory {
+public class ClientProxyFactory {
     private static final Logger logger = LoggerFactory.getLogger(ClientProxyFactory.class);
 
-    private ServiceDiscovery serviceDiscovery;
+    private final ServiceDiscovery serviceDiscovery;
 
-    private Serializer serializer;
 
-    private RpcClient rpcClient;
+    private final RpcClient rpcClient;
 
-    private LoadBalancer loadBalancer;
+    private final LoadBalancer loadBalancer;
 
-    public ClientProxyFactory(ServiceDiscovery serviceDiscovery, Serializer serializer, RpcClient rpcClient, LoadBalancer loadBalancer) {
+
+    private final List<NexusInterceptor> interceptors;
+
+    public ClientProxyFactory(ServiceDiscovery serviceDiscovery, RpcClient rpcClient, LoadBalancer loadBalancer, List<NexusInterceptor> interceptors) {
         this.serviceDiscovery = serviceDiscovery;
-        this.serializer = serializer;
         this.rpcClient = rpcClient;
         this.loadBalancer = loadBalancer;
+        this.interceptors = interceptors;
     }
 
     /**
@@ -62,20 +63,53 @@ public class  ClientProxyFactory {
             }
             // 负载均衡策略
             final MateInfo mateInfo = loadBalancer.getService(serviceInfos);
-            final RpcRequest rpcRequest = new RpcRequest();
+            final RpcRequest rpcRequest = RpcRequestContext.getRequest();
             rpcRequest.setServiceName(serviceName);
             rpcRequest.setClazzName(clazzName);
             rpcRequest.setMethod(method.getName());
             rpcRequest.setParameterTypes(method.getParameterTypes());
             rpcRequest.setParameters(args);
-            // 发送消息
-            final RpcResponse rpcResponse = rpcClient.sendMessage(rpcRequest, mateInfo);
-            Assert.isTrue(rpcResponse != null, "Server Exception:Response is null");
-            if (rpcResponse.getException() != null) {
-                throw rpcResponse.getException();
+            RpcResponse response = getResponse(rpcRequest, mateInfo);
+            RpcRequestContext.removeRequest();
+            Assert.isTrue(response != null, "Server Exception:Response is null");
+            if (response.getException() != null) {
+                throw response.getException();
             }
             // 解析返回结果进行处理
-            return rpcResponse.getData();
+            return response.getData();
         });
+    }
+
+
+    private RpcResponse getResponse(RpcRequest request, MateInfo mateInfo) {
+        RpcResponse response = new RpcResponse();
+        // 前置拦截
+        if (!beforeDoIntercept(request, response)) {
+            return response;
+        }
+        // 发送消息
+        response = rpcClient.sendMessage(request, mateInfo);
+        // 后置拦截
+        afterDoIntercept(request, response);
+        return response;
+    }
+
+    private boolean beforeDoIntercept(RpcRequest request, RpcResponse response) {
+        for (NexusInterceptor interceptor : interceptors) {
+            if (!interceptor.beforeInvoke(request, response)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    private boolean afterDoIntercept(RpcRequest request, RpcResponse response) {
+        for (NexusInterceptor interceptor : interceptors) {
+            if (!interceptor.afterInvoke(request, response)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

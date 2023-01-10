@@ -1,20 +1,20 @@
 package com.mao.nexus.config;
 
-import com.mao.nexus.invocation.ClientProxyFactory;
+import com.mao.nexus.exception.handler.DefaultNexusExceptionHandler;
+
+import com.mao.nexus.exception.handler.NexusExceptionHandler;
 import com.mao.nexus.io.netty.server.handler.RequestHandler;
 import com.mao.nexus.io.netty.server.network.NettyRpcServer;
 import com.mao.nexus.io.netty.server.network.RpcServer;
-import com.mao.nexus.property.RegistryProperties;
 import com.mao.nexus.property.RpcProperties;
 import com.mao.nexus.registry.ServiceRegistry;
 import com.mao.nexus.serialize.Serializer;
-import com.mao.nexus.spi.ExtensionLoader;
 import com.mao.nexus.spring.DefaultRpcListener;
-import org.apache.log4j.pattern.BridgePatternConverter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 
 /**
  * @author StephenMao
@@ -22,7 +22,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 //@ConditionalOnProperty(prefix = "nexus", name = "rpc-role", havingValue = "server")
-public class ServerAutoConfigration {
+public class ServerAutoConfiguration {
 
     // 监听器
     @Bean
@@ -33,6 +33,13 @@ public class ServerAutoConfigration {
     }
 
 
+    @Bean
+    @Lazy
+    @ConditionalOnMissingBean
+    public NexusExceptionHandler exceptionHandler() {
+        return new DefaultNexusExceptionHandler();
+    }
+
 //    // 服务端
 //    @Bean
 //    public ServiceRegistry serviceRegister(@Autowired RegistryProperties registryProperties) {
@@ -42,8 +49,8 @@ public class ServerAutoConfigration {
 //    }
 
     @Bean
-    public RequestHandler requestHandler(@Autowired(required = false) ServiceRegistry serviceRegistry, @Autowired Serializer serializer) {
-        return new RequestHandler(serviceRegistry, serializer);
+    public RequestHandler requestHandler(@Autowired(required = false) ServiceRegistry serviceRegistry, @Autowired Serializer serializer, @Autowired NexusExceptionHandler exceptionInterceptor) {
+        return new RequestHandler(serviceRegistry, serializer, exceptionInterceptor);
     }
 
     @Bean

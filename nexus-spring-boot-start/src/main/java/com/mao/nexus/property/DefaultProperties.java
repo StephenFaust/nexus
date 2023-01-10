@@ -1,7 +1,5 @@
 package com.mao.nexus.property;
 
-import com.mao.nexus.property.enums.RpcRole;
-
 /**
  * @author ：StephenMao
  * @date ：2022/6/22 16:07

@@ -54,7 +54,7 @@ public class NettyRpcClient implements RpcClient {
 
 
     @Override
-    public RpcResponse sendMessage(RpcRequest request, MateInfo mateInfo) throws ExecutionException, InterruptedException {
+    public RpcResponse sendMessage(RpcRequest request, MateInfo mateInfo) {
         final String ip = mateInfo.getIp();
         final Integer port = mateInfo.getPort();
         final InetSocketAddress inetSocketAddress = new InetSocketAddress(ip, port);

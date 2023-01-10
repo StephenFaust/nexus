@@ -2,9 +2,9 @@ package com.mao.nexus.config;
 
 import com.mao.nexus.cluster.loadbalance.LoadBalancer;
 import com.mao.nexus.discovery.ServiceDiscovery;
+import com.mao.nexus.interceptor.NexusInterceptor;
 import com.mao.nexus.invocation.ClientProxyFactory;
 import com.mao.nexus.io.netty.client.network.NettyRpcClient;
-import com.mao.nexus.io.netty.client.network.NewNettyRpcClient;
 import com.mao.nexus.io.netty.client.network.RpcClient;
 import com.mao.nexus.property.RegistryProperties;
 import com.mao.nexus.property.RpcProperties;
@@ -17,6 +17,8 @@ import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+
+import java.util.List;
 
 /**
  * @author StephenMao
@@ -42,13 +44,14 @@ public class ClientAutoConfiguration {
 
 
     @Bean
-    public ClientProxyFactory clientProxyFactory(@Autowired ServiceDiscovery serviceDiscovery, @Autowired Serializer serializer, @Autowired RpcClient rpcClient, @Autowired LoadBalancer loadBalancer) {
-        return new ClientProxyFactory(serviceDiscovery, serializer, rpcClient, loadBalancer);
+    public ClientProxyFactory clientProxyFactory(@Autowired ServiceDiscovery serviceDiscovery, @Autowired RpcClient rpcClient, @Autowired LoadBalancer loadBalancer, @Autowired List<NexusInterceptor> interceptors) {
+        return new ClientProxyFactory(serviceDiscovery, rpcClient, loadBalancer, interceptors);
     }
 
     @Bean
     public RpcClient rpcClient(@Autowired RpcProperties rpcProperties, @Autowired Serializer serializer) {
         return new NettyRpcClient(rpcProperties.getMaxConnection(), rpcProperties.getTimeoutMillis(), serializer);
     }
+
 
 }
