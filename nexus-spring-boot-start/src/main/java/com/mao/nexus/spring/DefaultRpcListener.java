@@ -1,19 +1,16 @@
 package com.mao.nexus.spring;
 
-import com.mao.nexus.annotation.NexusClient;
 import com.mao.nexus.annotation.NexusService;
-import com.mao.nexus.invocation.ClientProxyFactory;
 import com.mao.nexus.io.common.ServiceInfo;
 import com.mao.nexus.io.netty.server.network.RpcServer;
-import com.mao.nexus.registry.ServiceRegistry;
 import com.mao.nexus.property.RpcProperties;
+import com.mao.nexus.registry.ServiceRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 
-import java.lang.reflect.Field;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Map;
@@ -60,7 +57,7 @@ public class DefaultRpcListener implements ApplicationListener<ContextRefreshedE
             final Class<?>[] interfaces = clazz.getInterfaces();
             // 这里假设只实现了一个接口
             final Class<?> interfaceClazz = interfaces[0];
-            final String seviceName = rpcProperties.getServiceName();
+            final String serviceName = rpcProperties.getServiceName();
             final String clazzName = interfaceClazz.getName();
             String ip = "127.0.0.1";
             try {
@@ -68,7 +65,7 @@ public class DefaultRpcListener implements ApplicationListener<ContextRefreshedE
             } catch (UnknownHostException e) {
             }
             final Integer port = rpcProperties.getPort();
-            final ServiceInfo serviceInfo = new ServiceInfo(seviceName, ip, port, clazzName, interfaceClazz, obj);
+            final ServiceInfo serviceInfo = new ServiceInfo(serviceName, ip, port, clazzName, interfaceClazz, obj);
             try {
                 // 注册服务
                 serviceRegistry.register(serviceInfo);

@@ -1,22 +1,22 @@
 package com.mao.nexus.invocation;
 
 
-import com.mao.nexus.exception.RpcException;
-import com.mao.nexus.discovery.ServiceDiscovery;
-import com.mao.nexus.interceptor.NexusInterceptor;
-import com.mao.nexus.io.common.*;
-import com.mao.nexus.io.netty.client.network.RpcClient;
 import com.mao.nexus.cluster.loadbalance.LoadBalancer;
-import okhttp3.Response;
+import com.mao.nexus.discovery.ServiceDiscovery;
+import com.mao.nexus.exception.RpcException;
+import com.mao.nexus.interceptor.NexusClientInterceptor;
+import com.mao.nexus.io.common.MateInfo;
+import com.mao.nexus.io.common.RpcRequest;
+import com.mao.nexus.io.common.RpcRequestContext;
+import com.mao.nexus.io.common.RpcResponse;
+import com.mao.nexus.io.netty.client.network.RpcClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 import java.lang.reflect.Proxy;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 /**
  * @author ：StephenMao
@@ -35,9 +35,9 @@ public class ClientProxyFactory {
     private final LoadBalancer loadBalancer;
 
 
-    private final List<NexusInterceptor> interceptors;
+    private final List<NexusClientInterceptor> interceptors;
 
-    public ClientProxyFactory(ServiceDiscovery serviceDiscovery, RpcClient rpcClient, LoadBalancer loadBalancer, List<NexusInterceptor> interceptors) {
+    public ClientProxyFactory(ServiceDiscovery serviceDiscovery, RpcClient rpcClient, LoadBalancer loadBalancer, List<NexusClientInterceptor> interceptors) {
         this.serviceDiscovery = serviceDiscovery;
         this.rpcClient = rpcClient;
         this.loadBalancer = loadBalancer;
@@ -95,7 +95,7 @@ public class ClientProxyFactory {
     }
 
     private boolean beforeDoIntercept(RpcRequest request, RpcResponse response) {
-        for (NexusInterceptor interceptor : interceptors) {
+        for (NexusClientInterceptor interceptor : interceptors) {
             if (!interceptor.beforeInvoke(request, response)) {
                 return false;
             }
@@ -105,7 +105,7 @@ public class ClientProxyFactory {
 
 
     private boolean afterDoIntercept(RpcRequest request, RpcResponse response) {
-        for (NexusInterceptor interceptor : interceptors) {
+        for (NexusClientInterceptor interceptor : interceptors) {
             if (!interceptor.afterInvoke(request, response)) {
                 return false;
             }

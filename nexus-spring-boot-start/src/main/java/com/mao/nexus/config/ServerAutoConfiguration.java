@@ -1,8 +1,8 @@
 package com.mao.nexus.config;
 
 import com.mao.nexus.exception.handler.DefaultNexusExceptionHandler;
-
 import com.mao.nexus.exception.handler.NexusExceptionHandler;
+import com.mao.nexus.interceptor.NexusServerInterceptor;
 import com.mao.nexus.io.netty.server.handler.RequestHandler;
 import com.mao.nexus.io.netty.server.network.NettyRpcServer;
 import com.mao.nexus.io.netty.server.network.RpcServer;
@@ -15,6 +15,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+
+import java.util.List;
 
 /**
  * @author StephenMao
@@ -49,8 +51,8 @@ public class ServerAutoConfiguration {
 //    }
 
     @Bean
-    public RequestHandler requestHandler(@Autowired(required = false) ServiceRegistry serviceRegistry, @Autowired Serializer serializer, @Autowired NexusExceptionHandler exceptionInterceptor) {
-        return new RequestHandler(serviceRegistry, serializer, exceptionInterceptor);
+    public RequestHandler requestHandler(@Autowired(required = false) ServiceRegistry serviceRegistry, @Autowired Serializer serializer, @Autowired NexusExceptionHandler exceptionInterceptor, @Autowired List<NexusServerInterceptor> interceptors) {
+        return new RequestHandler(serviceRegistry, serializer, exceptionInterceptor, interceptors);
     }
 
     @Bean

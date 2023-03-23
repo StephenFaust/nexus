@@ -1,6 +1,6 @@
 package com.mao.nexus.example.client.interceptor;
 
-import com.mao.nexus.interceptor.NexusInterceptor;
+import com.mao.nexus.interceptor.NexusClientInterceptor;
 import com.mao.nexus.io.common.RpcRequest;
 import com.mao.nexus.io.common.RpcResponse;
 import org.springframework.stereotype.Component;
@@ -9,7 +9,7 @@ import java.util.Map;
 
 
 @Component
-public class GlobalInterceptor implements NexusInterceptor {
+public class GlobalClientInterceptor implements NexusClientInterceptor {
 
 
     @Override

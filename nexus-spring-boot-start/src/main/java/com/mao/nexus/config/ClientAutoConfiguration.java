@@ -2,7 +2,7 @@ package com.mao.nexus.config;
 
 import com.mao.nexus.cluster.loadbalance.LoadBalancer;
 import com.mao.nexus.discovery.ServiceDiscovery;
-import com.mao.nexus.interceptor.NexusInterceptor;
+import com.mao.nexus.interceptor.NexusClientInterceptor;
 import com.mao.nexus.invocation.ClientProxyFactory;
 import com.mao.nexus.io.netty.client.network.NettyRpcClient;
 import com.mao.nexus.io.netty.client.network.RpcClient;
@@ -44,7 +44,7 @@ public class ClientAutoConfiguration {
 
 
     @Bean
-    public ClientProxyFactory clientProxyFactory(@Autowired ServiceDiscovery serviceDiscovery, @Autowired RpcClient rpcClient, @Autowired LoadBalancer loadBalancer, @Autowired List<NexusInterceptor> interceptors) {
+    public ClientProxyFactory clientProxyFactory(@Autowired ServiceDiscovery serviceDiscovery, @Autowired RpcClient rpcClient, @Autowired LoadBalancer loadBalancer, @Autowired List<NexusClientInterceptor> interceptors) {
         return new ClientProxyFactory(serviceDiscovery, rpcClient, loadBalancer, interceptors);
     }
 
