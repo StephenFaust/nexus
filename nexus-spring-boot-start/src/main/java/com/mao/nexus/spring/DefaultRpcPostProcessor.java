@@ -51,7 +51,7 @@ public class DefaultRpcPostProcessor implements BeanPostProcessor {
                 // 如果该成员属性没有标记该注解，继续找一下
                 continue;
             }
-            // 终于找到被注解标记的成员属性了
+            // 找到被注解标记的成员属性了
             Class<?> fieldClass = field.getType();
             // 获取服务名
             String serviceName = annotation.serviceName();
