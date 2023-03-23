@@ -3,9 +3,6 @@ package com.mao.nexus.spring;
 
 import com.mao.nexus.annotation.NexusClient;
 import com.mao.nexus.invocation.ClientProxyFactory;
-import com.mao.nexus.io.netty.server.network.RpcServer;
-import com.mao.nexus.property.RpcProperties;
-import com.mao.nexus.registry.ServiceRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -33,14 +30,14 @@ public class DefaultRpcPostProcessor implements BeanPostProcessor {
 
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+        final Class<?> clazz = bean.getClass();
+        injectDependencyService(bean, clazz);
         return bean;
     }
 
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-        final Class<?> clazz = bean.getClass();
-        injectDependencyService(bean, clazz);
         return bean;
     }
 
