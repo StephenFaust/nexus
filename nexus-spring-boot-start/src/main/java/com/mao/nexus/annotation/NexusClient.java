@@ -10,5 +10,24 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface NexusClient {
+    /**
+     * serviceName
+     *
+     * @return service-name
+     */
     String serviceName();
+
+    /**
+     * @return retry count
+     */
+    int retryCount() default -1;
+
+    /**
+     * unit:ms
+     *
+     * @return retryInternal
+     */
+    int retryInternal() default 0;
+
+
 }

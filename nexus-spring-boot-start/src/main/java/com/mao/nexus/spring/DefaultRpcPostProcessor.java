@@ -36,12 +36,6 @@ public class DefaultRpcPostProcessor implements BeanPostProcessor {
     }
 
 
-    @Override
-    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-        return bean;
-    }
-
-
     private void injectDependencyService(Object bean, Class<?> clazz) {
         // 遍历每个 bean 的成员属性，如果成员属性被 @ServiceReference 注解标记，说明依赖rpc远端接口
         Field[] fields = clazz.getDeclaredFields();
@@ -55,11 +49,15 @@ public class DefaultRpcPostProcessor implements BeanPostProcessor {
             Class<?> fieldClass = field.getType();
             // 获取服务名
             String serviceName = annotation.serviceName();
+            // 获取重试次数
+            int retryCount = annotation.retryCount();
+            // 获取重试间隔
+            int retryInternal = annotation.retryInternal();
             //关闭安全检查
             field.setAccessible(true);
             try {
                 // 注入代理对象值
-                field.set(bean, clientProxyFactory.getProxyInstance(fieldClass, serviceName));
+                field.set(bean, clientProxyFactory.getProxyInstance(fieldClass, serviceName, retryCount, retryInternal));
             } catch (IllegalAccessException e) {
                 logger.error("Fail to inject service, bean.name: {}, error.msg: {}", bean, e.getMessage());
             }

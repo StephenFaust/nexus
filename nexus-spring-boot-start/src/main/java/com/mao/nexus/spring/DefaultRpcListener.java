@@ -27,7 +27,7 @@ public class DefaultRpcListener implements ApplicationListener<ContextRefreshedE
 
     private final RpcServer rpcServer;
 
-    private RpcProperties rpcProperties;
+    private final RpcProperties rpcProperties;
 
     public DefaultRpcListener(ServiceRegistry serviceRegistry,
                               RpcServer rpcServer,

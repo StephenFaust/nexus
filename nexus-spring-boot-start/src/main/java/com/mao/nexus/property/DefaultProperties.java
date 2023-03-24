@@ -23,6 +23,6 @@ public class DefaultProperties {
     public static final String DEFAULT_REGISTRY_PROTOCOL = "redis";
 
     //客户端超时时间，默认为1s
-    public static final int DEFAULT_Timeout_Millis = 1_000;
+    public static final int DEFAULT_TIMEOUT_MILLIS = 1_000;
 
 }

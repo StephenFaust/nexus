@@ -13,6 +13,8 @@ import java.util.Map;
 public class RpcRequest extends MateData {
 
     private String serviceName;
+    private int retryCount;
+    private int retryInternal;
     private String clazzName;
     private String method;
     private Map<String, String> headers = new HashMap<>();

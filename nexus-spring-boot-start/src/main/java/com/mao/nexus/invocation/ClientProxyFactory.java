@@ -17,6 +17,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.lang.reflect.Proxy;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author ：StephenMao
@@ -53,7 +54,7 @@ public class ClientProxyFactory {
      * @return
      */
     @SuppressWarnings("unchecked")
-    public <T> T getProxyInstance(Class<T> clazz, String serviceName) {
+    public <T> T getProxyInstance(Class<T> clazz, String serviceName, int retryCount, int retryInternal) {
         return (T) Proxy.newProxyInstance(clazz.getClassLoader(), new Class[]{clazz}, (proxy, method, args) -> {
             String clazzName = clazz.getName();
             final List<MateInfo> serviceInfos = serviceDiscovery.listServices(serviceName);
@@ -65,6 +66,8 @@ public class ClientProxyFactory {
             final MateInfo mateInfo = loadBalancer.getService(serviceInfos);
             final RpcRequest rpcRequest = RpcRequestContext.getRequest();
             rpcRequest.setServiceName(serviceName);
+            rpcRequest.setRetryCount(retryCount);
+            rpcRequest.setRetryInternal(retryInternal);
             rpcRequest.setClazzName(clazzName);
             rpcRequest.setMethod(method.getName());
             rpcRequest.setParameterTypes(method.getParameterTypes());
@@ -81,18 +84,56 @@ public class ClientProxyFactory {
     }
 
 
+    private boolean needRetry(RpcRequest request) {
+        return request.getRetryCount() > 0;
+    }
+
     private RpcResponse getResponse(RpcRequest request, MateInfo mateInfo) {
         RpcResponse response = new RpcResponse();
         // 前置拦截
         if (!beforeDoIntercept(request, response)) {
             return response;
         }
-        // 发送消息
-        response = rpcClient.sendMessage(request, mateInfo);
+        if (needRetry(request)) {
+            response = retry(response, request, mateInfo);
+        } else {
+            // 发送消息
+            response = rpcClient.sendMessage(request, mateInfo);
+        }
         // 后置拦截
         afterDoIntercept(request, response);
         return response;
     }
+
+
+    private RpcResponse retry(RpcResponse response, final RpcRequest request, final MateInfo mateInfo) {
+        int retryCount = request.getRetryCount();
+        final int retryInternal = request.getRetryInternal();
+        while (retryCount > 0) {
+            retryCount--;
+            boolean flag = false;
+            try {
+                // 发送消息
+                response = rpcClient.sendMessage(request, mateInfo);
+            } catch (Exception ex) {
+                logger.error("error request , retry count left {}", retryCount);
+                flag = true;
+            }
+            if (response == null
+                    || response.getException() != null) {
+                flag = true;
+            }
+            if (flag) {
+                try {
+                    TimeUnit.MILLISECONDS.sleep(retryInternal);
+                } catch (InterruptedException e) {
+                    logger.info("InterruptedException {}", e.getMessage());
+                }
+            }
+        }
+        return response;
+    }
+
 
     private boolean beforeDoIntercept(RpcRequest request, RpcResponse response) {
         for (NexusClientInterceptor interceptor : interceptors) {
