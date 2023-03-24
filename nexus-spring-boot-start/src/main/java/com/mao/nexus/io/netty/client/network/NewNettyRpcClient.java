@@ -44,7 +44,7 @@ public class NewNettyRpcClient implements RpcClient {
 
     private final int timeoutMillis;
 
-    private static int CLIENT_THREADS_NUMBER = Runtime.getRuntime().availableProcessors();
+    private static final int CLIENT_THREADS_NUMBER = Runtime.getRuntime().availableProcessors();
 
 
     public NewNettyRpcClient(int timeoutMillis, Serializer serializer) {

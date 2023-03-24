@@ -75,8 +75,9 @@ public class ClientProxyFactory {
             RpcResponse response = getResponse(rpcRequest, mateInfo);
             RpcRequestContext.removeRequest();
             Assert.isTrue(response != null, "Server Exception:Response is null");
-            if (response.getException() != null) {
-                throw response.getException();
+            RpcException exception = response.getException();
+            if (exception != null) {
+                throw exception;
             }
             // 解析返回结果进行处理
             return response.getData();
@@ -109,8 +110,9 @@ public class ClientProxyFactory {
     private RpcResponse retry(RpcResponse response, final RpcRequest request, final MateInfo mateInfo) {
         int retryCount = request.getRetryCount();
         final int retryInternal = request.getRetryInternal();
+        ++retryCount;
         while (retryCount > 0) {
-            retryCount--;
+            --retryCount;
             boolean flag = false;
             try {
                 // 发送消息
