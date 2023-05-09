@@ -11,6 +11,7 @@
     <modules>
         <module>nexus-spring-boot-start</module>
         <module>nexus-example</module>
+        <module>nexus-core</module>
     </modules>
 
 

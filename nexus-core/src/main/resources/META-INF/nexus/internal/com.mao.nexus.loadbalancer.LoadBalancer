@@ -1,0 +1,2 @@
+random=com.mao.nexus.loadbalancer.RandomLoadBalancer
+train=com.mao.nexus.loadbalancer.TrainLoadBalancer
