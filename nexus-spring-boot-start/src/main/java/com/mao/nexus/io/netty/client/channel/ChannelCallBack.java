@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 public class ChannelCallBack implements CallBack {
 
 
-    private static Logger logger = LoggerFactory.getLogger(ChannelCallBack.class);
+    private static final Logger logger = LoggerFactory.getLogger(ChannelCallBack.class);
 
     private RpcResponse resp = null;
 

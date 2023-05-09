@@ -56,6 +56,8 @@ public class NewClientChannelHandler extends ChannelInboundHandlerAdapter {
             } else {
                 logger.info("receive message fail");
             }
+        } catch (Exception ex) {
+            logger.error("receive message fail ", ex);
         } finally {
             //一定要将byteBuf释放掉，不然会内存泄漏
             ReferenceCountUtil.release(buffer);
@@ -66,8 +68,6 @@ public class NewClientChannelHandler extends ChannelInboundHandlerAdapter {
 //    public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
 //        ctx.flush();
 //    }
-
-
 
 
     @Override
