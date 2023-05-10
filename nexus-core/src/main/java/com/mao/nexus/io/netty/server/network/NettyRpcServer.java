@@ -42,7 +42,7 @@ public class NettyRpcServer extends RpcServer {
         final Executor executor = new ThreadPoolExecutor(maxWorkThreadCount, maxWorkThreadCount, 0, TimeUnit.SECONDS, new LinkedBlockingQueue<>(), r -> {
             Thread thread = new Thread(r);
             thread.setDaemon(true);
-            thread.setName("ser-work-th-" + thread.getId());
+            thread.setName("nexus-worker-executor-" + thread.getId());
             return thread;
         });
 //        EventExecutorGroup businessGroup = new DefaultEventExecutorGroup(maxWorkThreadCount, new ThreadFactory() {
@@ -81,7 +81,7 @@ public class NettyRpcServer extends RpcServer {
 
             // 绑定端口号，同步启动服务
             ChannelFuture channelFuture = serverBootstrap.bind(port).sync();
-            logger.info("[Nexus]Rpc Server started on port: {}", port);
+            logger.info("Nexus Server started on port: {}", port);
             channel = channelFuture.channel();
             // 对关闭通道进行监听
             channelFuture.channel().closeFuture().addListener(future -> {

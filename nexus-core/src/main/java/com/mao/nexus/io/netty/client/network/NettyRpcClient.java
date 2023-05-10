@@ -20,6 +20,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author ：StephenMao
@@ -37,10 +38,13 @@ public class NettyRpcClient implements RpcClient {
 
     private static final int CLIENT_THREADS_NUMBER = Runtime.getRuntime().availableProcessors();
 
+    private final AtomicLong IdentificationGenerator;
+
     public NettyRpcClient(int maxConnection, int timeoutMillis, Serializer serializer) {
         this.maxConnection = maxConnection;
         this.timeoutMillis = timeoutMillis;
         this.serializer = serializer;
+        this.IdentificationGenerator = new AtomicLong();
     }
 
 
@@ -49,7 +53,7 @@ public class NettyRpcClient implements RpcClient {
         final Executor executor = new ThreadPoolExecutor(CLIENT_THREADS_NUMBER, CLIENT_THREADS_NUMBER, 0, TimeUnit.SECONDS, new LinkedBlockingQueue<>(), r -> {
             Thread thread = new Thread(r);
             thread.setDaemon(true);
-            thread.setName("client-work-th-" + thread.getId());
+            thread.setName("nexus-work-executor-" + thread.getId());
             return thread;
         });
         NettyPoolClient.init(maxConnection, serializer, executor);
@@ -64,7 +68,7 @@ public class NettyRpcClient implements RpcClient {
         final NettyPoolClient poolClient = NettyPoolClient.getInstance();
         CallBack callback = new ChannelCallBack();
         try {
-            request.setUniqueIdentification(System.nanoTime());
+            request.setUniqueIdentification(IdentificationGenerator.incrementAndGet());
             ChannelManger.CALLBACK_CACHES.put(request.getUniqueIdentification(), callback);
             //序列化
             final byte[] data = serializer.serialize(request);
