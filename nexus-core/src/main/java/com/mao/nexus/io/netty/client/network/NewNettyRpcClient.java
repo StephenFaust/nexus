@@ -32,6 +32,8 @@ import java.util.concurrent.TimeUnit;
  * @author ：StephenMao
  * @date ：2022/6/29 15:01
  */
+
+@Deprecated
 public class NewNettyRpcClient implements RpcClient {
 
     private static final Logger logger = LoggerFactory.getLogger(NewNettyRpcClient.class);
@@ -70,7 +72,7 @@ public class NewNettyRpcClient implements RpcClient {
                 .option(ChannelOption.SO_KEEPALIVE, true)
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
-                    protected void initChannel(SocketChannel ch) throws Exception {
+                    protected void initChannel(SocketChannel ch) {
                         ch.pipeline()
                                 .addLast("encode", new LengthFieldPrepender(8))
                                 .addLast("decode", new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0,
@@ -136,12 +138,9 @@ public class NewNettyRpcClient implements RpcClient {
 
 
     private Channel getChannel(String ip, int port) throws InterruptedException {
-        return bootstrap.connect(ip, port).addListener(new ChannelFutureListener() {
-            @Override
-            public void operationComplete(ChannelFuture channelFuture) throws Exception {
-                if (channelFuture.isSuccess()) {
-                    logger.info("{}:{} connect success", ip, port);
-                }
+        return bootstrap.connect(ip, port).addListener((ChannelFutureListener) channelFuture -> {
+            if (channelFuture.isSuccess()) {
+                logger.info("{}:{} connect success", ip, port);
             }
         }).sync().channel();
     }

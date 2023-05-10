@@ -53,7 +53,7 @@ public class NettyRpcClient implements RpcClient {
         final Executor executor = new ThreadPoolExecutor(CLIENT_THREADS_NUMBER, CLIENT_THREADS_NUMBER, 0, TimeUnit.SECONDS, new LinkedBlockingQueue<>(), r -> {
             Thread thread = new Thread(r);
             thread.setDaemon(true);
-            thread.setName("nexus-work-executor-" + thread.getId());
+            thread.setName(String.format("nexus-client-executor-%d", thread.getId()));
             return thread;
         });
         NettyPoolClient.init(maxConnection, serializer, executor);
@@ -77,9 +77,14 @@ public class NettyRpcClient implements RpcClient {
             //根据地址获得池时，如果poolMap没有这个池，则会put一个生成新的池
             final Channel channel = poolClient.getChannel(inetSocketAddress);
             logger.info("use channel:{}", channel);
-            channel.writeAndFlush(buffer);
-            //返还给连接池
-            poolClient.release(inetSocketAddress, channel);
+            try {
+                channel.writeAndFlush(buffer);
+            } catch (Exception ex) {
+                logger.error("send message error,msg:{}", ex.getMessage());
+            } finally {
+                //返还给连接池
+                poolClient.release(inetSocketAddress, channel);
+            }
         } catch (Exception ex) {
             logger.error("send message error,msg:{}", ex.getMessage());
         }

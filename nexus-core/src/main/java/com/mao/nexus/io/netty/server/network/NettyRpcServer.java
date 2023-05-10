@@ -42,7 +42,7 @@ public class NettyRpcServer extends RpcServer {
         final Executor executor = new ThreadPoolExecutor(maxWorkThreadCount, maxWorkThreadCount, 0, TimeUnit.SECONDS, new LinkedBlockingQueue<>(), r -> {
             Thread thread = new Thread(r);
             thread.setDaemon(true);
-            thread.setName("nexus-worker-executor-" + thread.getId());
+            thread.setName(String.format("nexus-server-executor-%d", thread.getId()));
             return thread;
         });
 //        EventExecutorGroup businessGroup = new DefaultEventExecutorGroup(maxWorkThreadCount, new ThreadFactory() {

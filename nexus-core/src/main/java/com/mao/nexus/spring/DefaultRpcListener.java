@@ -62,7 +62,7 @@ public class DefaultRpcListener implements ApplicationListener<ContextRefreshedE
             String ip = "127.0.0.1";
             try {
                 ip = InetAddress.getLocalHost().getHostAddress();
-            } catch (UnknownHostException e) {
+            } catch (UnknownHostException ignored) {
             }
             final Integer port = rpcProperties.getPort();
             final ServiceInfo serviceInfo = new ServiceInfo(serviceName, ip, port, clazzName, interfaceClazz, obj);
