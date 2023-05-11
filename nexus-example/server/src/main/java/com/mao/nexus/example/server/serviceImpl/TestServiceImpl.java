@@ -4,7 +4,6 @@ import com.mao.nexus.annotation.NexusService;
 import com.mao.nexus.example.service.TestService;
 import com.mao.nexus.example.service.dto.User;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;

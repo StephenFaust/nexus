@@ -1,7 +1,6 @@
 package com.mao.nexus.invocation;
 
 
-import com.mao.nexus.loadbalancer.LoadBalancer;
 import com.mao.nexus.discovery.ServiceDiscovery;
 import com.mao.nexus.exception.RpcException;
 import com.mao.nexus.interceptor.NexusClientInterceptor;
@@ -10,10 +9,9 @@ import com.mao.nexus.io.common.RpcRequest;
 import com.mao.nexus.io.common.RpcRequestContext;
 import com.mao.nexus.io.common.RpcResponse;
 import com.mao.nexus.io.netty.client.network.RpcClient;
+import com.mao.nexus.loadbalancer.LoadBalancer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
 
 import java.lang.reflect.Proxy;
 import java.util.List;
@@ -59,7 +57,7 @@ public class ClientProxyFactory {
             String clazzName = clazz.getName();
             final List<MateInfo> serviceInfos = serviceDiscovery.listServices(serviceName);
             logger.info("Rpc server instance list: {}", serviceInfos);
-            if (CollectionUtils.isEmpty(serviceInfos)) {
+            if (serviceInfos == null || serviceInfos.isEmpty()) {
                 throw new RpcException("No rpc servers found.");
             }
             // 负载均衡策略
@@ -74,7 +72,10 @@ public class ClientProxyFactory {
             rpcRequest.setParameters(args);
             RpcResponse response = getResponse(rpcRequest, mateInfo);
             RpcRequestContext.removeRequest();
-            Assert.isTrue(response != null, "Server Exception:Response is null");
+            if (response == null) {
+                throw new RpcException("Server Exception:Response is null");
+            }
+
             RpcException exception = response.getException();
             if (exception != null) {
                 throw exception;

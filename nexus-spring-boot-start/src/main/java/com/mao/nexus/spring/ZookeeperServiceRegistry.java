@@ -1,6 +1,7 @@
-package com.mao.nexus.registry;
+package com.mao.nexus.spring;
 
 import com.mao.nexus.io.common.ServiceInfo;
+import com.mao.nexus.registry.DefaultServiceRegistry;
 
 /**
  * @author StephenMao

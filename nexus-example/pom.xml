@@ -18,4 +18,14 @@
     <packaging>pom</packaging>
 
 
+    <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.26</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
+
+
 </project>

@@ -1,6 +1,7 @@
-package com.mao.nexus.registry;
+package com.mao.nexus.spring;
 
 import com.mao.nexus.property.RpcProperties;
+import com.mao.nexus.registry.DefaultServiceRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.cloud.consul.serviceregistry.ConsulRegistration;
@@ -16,7 +17,7 @@ import java.util.Map;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ConsulRegistration.class})
-public class ConsulServiceRegistry extends DefaultServiceRegistry{
+public class ConsulServiceRegistry extends DefaultServiceRegistry {
 
     @Autowired(required = false)
     private ConsulRegistration consulRegistration;

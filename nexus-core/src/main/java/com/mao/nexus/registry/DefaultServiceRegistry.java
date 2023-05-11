@@ -1,9 +1,9 @@
 package com.mao.nexus.registry;
 
+import com.mao.nexus.exception.RpcException;
 import com.mao.nexus.io.common.ServiceInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.Assert;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,7 +19,9 @@ public abstract class DefaultServiceRegistry implements ServiceRegistry {
 
     @Override
     public void register(ServiceInfo serviceInfo) throws Exception {
-        Assert.notNull(serviceInfo, "error,mateInfo not null");
+        if (serviceInfo == null) {
+            throw new RpcException("error,mateInfo not null");
+        }
         final String clazzName = serviceInfo.getClazzName();
         serviceInfos.put(clazzName, serviceInfo);
     }

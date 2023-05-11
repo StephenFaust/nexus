@@ -1,8 +1,9 @@
-package com.mao.nexus.registry;
+package com.mao.nexus.spring;
 
 import com.mao.nexus.io.common.MateInfo;
 import com.mao.nexus.io.common.ServiceInfo;
 import com.mao.nexus.property.RegistryProperties;
+import com.mao.nexus.registry.DefaultServiceRegistry;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
