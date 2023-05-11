@@ -17,8 +17,8 @@ public class GlobalClientInterceptor implements NexusClientInterceptor {
         System.out.println(request);
         Map<String, String> headers = request.getHeaders();
         headers.put("1", "1");
-        response.setData(" 拦截了");
-        return false;
+//        response.setData(" 拦截了");
+        return true;
     }
 
     @Override

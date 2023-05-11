@@ -1,0 +1,2 @@
+redis=com.mao.nexus.spring.registry.RedisServiceRegistry
+zookeeper=com.mao.nexus.spring.registry.ZookeeperServiceRegistry

@@ -54,7 +54,7 @@ public class NewClientChannelHandler extends ChannelInboundHandlerAdapter {
             if (callBackService != null) {
                 callBackService.handle(rpcResponse);
             } else {
-                logger.info("receive message fail");
+                logger.info("receive message timeout");
             }
         } catch (Exception ex) {
             logger.error("receive message fail ", ex);

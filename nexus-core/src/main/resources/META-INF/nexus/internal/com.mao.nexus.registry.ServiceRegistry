@@ -1,2 +1,0 @@
-redis=com.mao.nexus.registry.RedisServiceRegistry
-zookeeper=com.mao.nexus.registry.ZookeeperServiceRegistry

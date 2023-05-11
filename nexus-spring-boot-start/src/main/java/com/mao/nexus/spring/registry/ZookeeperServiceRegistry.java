@@ -1,4 +1,4 @@
-package com.mao.nexus.spring;
+package com.mao.nexus.spring.registry;
 
 import com.mao.nexus.io.common.ServiceInfo;
 import com.mao.nexus.registry.DefaultServiceRegistry;

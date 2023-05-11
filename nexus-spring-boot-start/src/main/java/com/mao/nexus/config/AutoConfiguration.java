@@ -7,7 +7,7 @@ import com.mao.nexus.property.RegistryProperties;
 import com.mao.nexus.property.RpcProperties;
 import com.mao.nexus.serialize.Serializer;
 import com.mao.nexus.spi.ExtensionLoader;
-import com.mao.nexus.spring.ConsulServiceRegistry;
+import com.mao.nexus.spring.registry.ConsulServiceRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;

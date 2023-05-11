@@ -1,4 +1,4 @@
-package com.mao.nexus.spring;
+package com.mao.nexus.spring.registry;
 
 import com.mao.nexus.property.RpcProperties;
 import com.mao.nexus.registry.DefaultServiceRegistry;

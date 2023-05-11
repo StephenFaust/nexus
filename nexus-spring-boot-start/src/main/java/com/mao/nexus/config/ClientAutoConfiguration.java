@@ -1,11 +1,11 @@
 package com.mao.nexus.config;
 
-import com.mao.nexus.loadbalancer.LoadBalancer;
 import com.mao.nexus.discovery.ServiceDiscovery;
 import com.mao.nexus.interceptor.NexusClientInterceptor;
 import com.mao.nexus.invocation.ClientProxyFactory;
 import com.mao.nexus.io.netty.client.network.NettyRpcClient;
 import com.mao.nexus.io.netty.client.network.RpcClient;
+import com.mao.nexus.loadbalancer.LoadBalancer;
 import com.mao.nexus.property.RegistryProperties;
 import com.mao.nexus.property.RpcProperties;
 import com.mao.nexus.serialize.Serializer;
@@ -25,7 +25,6 @@ import java.util.List;
  * @date 2022/6/26 13:00
  */
 @Configuration
-//@ConditionalOnProperty(prefix = "nexus", name = "rpc-role", havingValue = "client")
 public class ClientAutoConfiguration {
 
     @Bean

@@ -23,7 +23,6 @@ import java.util.List;
  * @date 2022/6/26 12:57
  */
 @Configuration
-//@ConditionalOnProperty(prefix = "nexus", name = "rpc-role", havingValue = "server")
 public class ServerAutoConfiguration {
 
     // 监听器
@@ -42,7 +41,7 @@ public class ServerAutoConfiguration {
         return new DefaultNexusExceptionHandler();
     }
 
-//    // 服务端
+    // 服务端
 //    @Bean
 //    public ServiceRegistry serviceRegister(@Autowired RegistryProperties registryProperties) {
 //        ExtensionLoader<ServiceRegistry> extensionLoader =
