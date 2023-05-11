@@ -64,10 +64,6 @@ public class NewClientChannelHandler extends ChannelInboundHandlerAdapter {
         }
     }
 
-//    @Override
-//    public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
-//        ctx.flush();
-//    }
 
 
     @Override
