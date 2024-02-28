@@ -107,4 +107,5 @@ public class RpcController {
 ##### 案例
 
 更多详细案例在nexus-example中；
+文章：https://blog.csdn.net/stephenCAT1/article/details/130705690
 
