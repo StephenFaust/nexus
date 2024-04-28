@@ -1,6 +1,10 @@
 package com.mao.nexus.io.common;
 
 
+/**
+ * @author stephenmao
+ */
+@Deprecated
 public class RpcResponseContext {
 
 
@@ -8,5 +12,5 @@ public class RpcResponseContext {
     }
 
 
-    private static final ThreadLocal<RpcResponse> responseThreadLocal = ThreadLocal.withInitial(RpcResponse::new);
+
 }

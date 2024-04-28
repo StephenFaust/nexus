@@ -6,7 +6,6 @@ import com.mao.nexus.exception.RpcException;
 import com.mao.nexus.interceptor.NexusClientInterceptor;
 import com.mao.nexus.io.common.MateInfo;
 import com.mao.nexus.io.common.RpcRequest;
-import com.mao.nexus.io.common.RpcRequestContext;
 import com.mao.nexus.io.common.RpcResponse;
 import com.mao.nexus.io.netty.client.network.RpcClient;
 import com.mao.nexus.loadbalancer.LoadBalancer;
@@ -62,7 +61,7 @@ public class ClientProxyFactory {
             }
             // 负载均衡策略
             final MateInfo mateInfo = loadBalancer.getService(serviceInfos);
-            final RpcRequest rpcRequest = RpcRequestContext.getRequest();
+            final RpcRequest rpcRequest = new RpcRequest();
             rpcRequest.setServiceName(serviceName);
             rpcRequest.setRetryCount(retryCount);
             rpcRequest.setRetryInternal(retryInternal);
@@ -71,7 +70,6 @@ public class ClientProxyFactory {
             rpcRequest.setParameterTypes(method.getParameterTypes());
             rpcRequest.setParameters(args);
             RpcResponse response = getResponse(rpcRequest, mateInfo);
-            RpcRequestContext.removeRequest();
             if (response == null) {
                 throw new RpcException("Server Exception:Response is null");
             }

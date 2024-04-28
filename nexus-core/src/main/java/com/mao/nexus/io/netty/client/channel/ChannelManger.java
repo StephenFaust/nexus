@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ChannelManger {
 
-    public static final AttributeKey attributeKey = AttributeKey.valueOf("handler");
+    public static final AttributeKey ATTRIBUTE_KEY = AttributeKey.valueOf("handler");
 
     public static final Map<InetSocketAddress, Channel> CHANNEL_CACHES = new HashMap<>(4);
 

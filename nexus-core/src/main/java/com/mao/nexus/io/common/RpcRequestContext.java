@@ -1,5 +1,10 @@
 package com.mao.nexus.io.common;
 
+
+/**
+ * @author stephenmao
+ */
+@Deprecated
 public class RpcRequestContext {
 
     private RpcRequestContext() {

@@ -1,6 +1,7 @@
 package com.mao.nexus.io.common;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,6 +11,7 @@ import java.util.Map;
  * @date ：2022/6/13 19:51
  */
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class RpcRequest extends MateData {
 
     private String serviceName;

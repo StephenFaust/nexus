@@ -5,6 +5,9 @@ import com.mao.nexus.io.common.RpcResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @author stephenmao
+ */
 public class DefaultNexusExceptionHandler implements NexusExceptionHandler {
 
 
